@@ -187,7 +187,10 @@ class actfile :
         try :
             self.exptime=float(fitsfile[0].header['EXPTIME'])
         except :
-            self.exptime=float(fitsfile[0].header['EXPOSURE'])
+            try:
+                self.exptime=float(fitsfile[0].header['EXPOSURE'])
+            except:
+                self.exptime=None
         try :
            self.obsid=(fitsfile[0].header['OBSID']).strip()
            self.ccdslot=(fitsfile[0].header['CCDSLOT']).strip()
