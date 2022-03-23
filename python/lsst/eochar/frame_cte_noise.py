@@ -140,7 +140,7 @@ class Ifile :
                             fitsfile=pyfits.open(filenamed)
                             fits_is_open=True
                         self.all_file.append(datafile(fitsfile,Slow))
-                        self.selection.append(selection)
+                        self.selection.append((selection,filenamed))
                         # to be updated with a call to clap
                         #self.clap.append(new_time)
                         if verbose : print ('%d : Selected %s File %s ' % (self.nkept,selection,filenamed) )
