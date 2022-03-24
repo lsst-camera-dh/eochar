@@ -161,8 +161,9 @@ class actfile :
         #    Slow      :  True  : return : <> , var , nb_pix used , for each amplifier after bias subtraction  , but don't return the image
         #                 False : return the image ( in Self.Image[amp][:,:] ) for each amplifier after Bias correction , but not the <> , var,...
         #    Bias      : How the Bias correct is done :
-        #                 '2D'  : 2D bias correction using the  overscan line and column
-        #                 'Ct'  : 1 global bias number computed from all serial overscan   
+        #                 '2D' (default)  : 2D bias correction using the  overscan line and column
+        #                 '1D'            : 1D bias correction using the overscan per line 
+        #                 'Ct'            : 1 global bias number computed from all serial overscan   
         #                                 
         # next line need care , as the memory will grow quickly
         # self.fits=np.copy(fitsfile)
@@ -232,21 +233,24 @@ class actfile :
                 # // correction
                 linef=mean_over_per_line[:,np.newaxis]
                 # generate the 2D correction (thank's to numpy) 
-                over_cor_mean=mean_over_per_column+linef
-                # 2D correction of the overscan : 1 overscan subtracted per line , 1 overscan subtracted per column
+                #  over_cor_mean=mean_over_per_column+linef
                 if not(Slow) :
                     if Bias=='Ct' :
                         self.Image.append(fitsfile[i].data-mean_over_per_line.mean())
+                    elif Bias=='1D' :
+                        self.Image.append(fitsfile[i].data-(mean_over_per_column*0.+linef))
                     else :
                         # if 2D or what ever else 
-                        self.Image.append(fitsfile[i].data-over_cor_mean)
+                        self.Image.append(fitsfile[i].data-(mean_over_per_column+linef))
                     self.OverCol.append(mean_over_per_column)
                     self.OverLine.append(mean_over_per_line)
                 else :
                     if Bias=='Ct' :
                         Image_single=fitsfile[i].data-mean_over_per_line.mean()
+                    elif Bias=='1D' :
+                        Image_single=fitsfile[i].data-(mean_over_per_column*0.+linef)
                     else : 
-                        Image_single=fitsfile[i].data-over_cor_mean
+                        Image_single=fitsfile[i].data-(mean_over_per_column+linef)
                     IMean=np.zeros((nstepy,nstepx))
                     IVar=np.zeros((nstepy,nstepx))
                     INb=np.zeros((nstepy,nstepx))
