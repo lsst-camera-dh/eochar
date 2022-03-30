@@ -7,7 +7,7 @@
 #
 # Auhtor : P.Antilogus
 #
-# Version : 22 Feb 2019
+# Version : 30 March 2022
 #
 # Goal : this python file read raw data image , and can be used for specific sensor diagnostic like :
 #          - cte
@@ -236,12 +236,12 @@ class actfile :
                 #  over_cor_mean=mean_over_per_column+linef
                 if not(Slow) :
                     if Bias=='Ct' :
-                        self.Image.append(fitsfile[i].data-mean_over_per_line.mean())
+                        self.Image.append(np.single(fitsfile[i].data-mean_over_per_line.mean()))
                     elif Bias=='1D' :
-                        self.Image.append(fitsfile[i].data-(mean_over_per_column*0.+linef))
+                        self.Image.append(np.single(fitsfile[i].data-(mean_over_per_column*0.+linef)))
                     else :
                         # if 2D or what ever else 
-                        self.Image.append(fitsfile[i].data-(mean_over_per_column+linef))
+                        self.Image.append(np.single(fitsfile[i].data-(mean_over_per_column+linef)))
                     self.OverCol.append(mean_over_per_column)
                     self.OverLine.append(mean_over_per_line)
                 else :
