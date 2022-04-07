@@ -56,7 +56,7 @@ def smooth253(table) :
         sum353=sumk/k
     result=np.copy(table)
     result[4:-4]=sum353
-    print('smooth353 called with a table of ',len(result),' raws , std table =',np.std(table),' std result =',np.std(result))
+    #print('smooth353 called with a table of ',len(result),' raws , std table =',np.std(table),' std result =',np.std(result))
     return result
 
 #
