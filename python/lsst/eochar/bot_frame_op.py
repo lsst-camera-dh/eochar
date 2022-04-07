@@ -44,6 +44,21 @@ def image_area(image) :
     #
     return int(y[0])-1,int(y[1]),int(x[0])-1,int(x[1])
 
+def smooth253(table) :
+    # input 1D table to be smoothed  according to algorithm 353QH, TWICE (see HBOOK)
+    # the 4 first and last pixels are left unchanged : this is not a bad idea at least for
+    # the first 4 as we can have a high frequecy variation on the bias of the first lines 
+    sum353=np.copy(table)
+    for k in [3,5,3] :
+        sumk=np.copy(sum353[k-1:])
+        for i in range(1,k) :
+            sumk+=sum353[k-1-i:-i]
+        sum353=sumk/k
+    result=np.copy(table)
+    result[4:-4]=sum353
+    print('smooth353 called with a table of ',len(result),' raws , std table =',np.std(table),' std result =',np.std(result))
+    return result
+
 #
 class InFile :
    # Handel ( select et all ) file list from LSST ccd test bench 
@@ -163,7 +178,8 @@ class actfile :
         #    Bias      : How the Bias correct is done :
         #                 '2D' (default)  : 2D bias correction using the  overscan line and column
         #                 '1D'            : 1D bias correction using the overscan per line 
-        #                 'Ct'            : 1 global bias number computed from all serial overscan   
+        #                 'Ct'            : 1 global bias number computed from all serial overscan
+        #                 '2D y353' or '1D y353' or '2D x353' or '2D x353 y353'  :  x : smooth <// overscan> along colomn , y : smooth <serial overscan> along line using the 353 smoothing algo before computing the Bias correction       
         #                                 
         # next line need care , as the memory will grow quickly
         # self.fits=np.copy(fitsfile)
@@ -204,6 +220,20 @@ class actfile :
            self.raftbay=''
            self.lsst_num=''
            self.mjd=0.
+        # which Bias correction ?
+        Bias_val=Bias.split(' ')
+        Bias_cor='2D'
+        xsmooth=''
+        ysmooth=''
+        #
+        if len(Bias_val) > 0 :
+            Bias_cor=Bias_val[0]
+            for i in range(1,len(Bias_val)) :
+                if 'x' == Bias_val[i][0] :
+                    xsmooth=Bias_val[i][1:]
+                elif  'y' == Bias_val[i][0] :
+                    ysmooth=Bias_val[i][1:]
+        #       
 #                                                                                                              
 # Number of boxes to compute var and mean for each amps 
         nstepy=4
@@ -228,16 +258,21 @@ class actfile :
                 # // ovesrcan per column , corrected by the serial value per line
                 for l in range(first_p_over+2,last_l):
                     rawl[l-first_p_over-2,:]=fitsfile[i].data[l,:]-mean_over_per_line[l]
-                # // overscan
+                # from // overscan  correction per colomn 
                 mean_over_per_column=np.mean(rawl[:,:],axis=0)
-                # // correction
+                if xsmooth == '353' :
+                     mean_over_per_column=smooth253(mean_over_per_column)
+                # from serial overscan correction per line
+                if ysmooth == '353' :
+                     mean_over_per_line=smooth253(mean_over_per_line)
+                #
                 linef=mean_over_per_line[:,np.newaxis]
                 # generate the 2D correction (thank's to numpy) 
                 #  over_cor_mean=mean_over_per_column+linef
                 if not(Slow) :
-                    if Bias=='Ct' :
+                    if Bias_cor=='Ct' :
                         self.Image.append(np.single(fitsfile[i].data-mean_over_per_line.mean()))
-                    elif Bias=='1D' :
+                    elif Bias_cor=='1D' :
                         self.Image.append(np.single(fitsfile[i].data-(mean_over_per_column*0.+linef)))
                     else :
                         # if 2D or what ever else 
@@ -245,9 +280,9 @@ class actfile :
                     self.OverCol.append(mean_over_per_column)
                     self.OverLine.append(mean_over_per_line)
                 else :
-                    if Bias=='Ct' :
+                    if Bias_cor=='Ct' :
                         Image_single=fitsfile[i].data-mean_over_per_line.mean()
-                    elif Bias=='1D' :
+                    elif Bias_cor=='1D' :
                         Image_single=fitsfile[i].data-(mean_over_per_column*0.+linef)
                     else : 
                         Image_single=fitsfile[i].data-(mean_over_per_column+linef)
