@@ -177,6 +177,7 @@ class actfile :
         #                 False : return the image ( in Self.Image[amp][:,:] ) for each amplifier after Bias correction , but not the <> , var,...
         #    Bias      : How the Bias correct is done :
         #                 '2D' (default)  : 2D bias correction using the  overscan line and column
+        #                 '1X'            : 1X bias correction using the overscan per column (= // overscan )
         #                 '1D'            : 1D bias correction using the overscan per line 
         #                 'Ct'            : 1 global bias number computed from all serial overscan
         #                 '2D y353' or '1D y353' or '2D x353' or '2D x353 y353'  :  x : smooth <// overscan> along colomn , y : smooth <serial overscan> along line using the 353 smoothing algo before computing the Bias correction       
@@ -254,12 +255,15 @@ class actfile :
                 last_s=len(fitsfile[i].data[0,:])
                 # serial overscan
                 mean_over_per_line=np.mean(fitsfile[i].data[:,first_s_over+2:],axis=1)
-                rawl=np.zeros((last_l-first_p_over-2,last_s))
                 # // ovesrcan per column , corrected by the serial value per line
-                for l in range(first_p_over+2,last_l):
-                    rawl[l-first_p_over-2,:]=fitsfile[i].data[l,:]-mean_over_per_line[l]
-                # from // overscan  correction per colomn 
-                mean_over_per_column=np.mean(rawl[:,:],axis=0)
+                if  Bias_cor=='1X' :
+                    mean_over_per_column=fitsfile[i].data[first_p_over+2:last_l,:].mean(axis=0)
+                else :
+                    rawl=np.zeros((last_l-first_p_over-2,last_s))
+                    for l in range(first_p_over+2,last_l):
+                        rawl[l-first_p_over-2,:]=fitsfile[i].data[l,:]-mean_over_per_line[l]
+                    # from // overscan  correction per colomn 
+                    mean_over_per_column=np.mean(rawl[:,:],axis=0)
                 if xsmooth == '353' :
                      mean_over_per_column=smooth253(mean_over_per_column)
                 # from serial overscan correction per line
@@ -274,6 +278,8 @@ class actfile :
                         self.Image.append(np.single(fitsfile[i].data-mean_over_per_line.mean()))
                     elif Bias_cor=='1D' :
                         self.Image.append(np.single(fitsfile[i].data-(mean_over_per_column*0.+linef)))
+                    elif Bias_cor=='1X' :
+                        self.Image.append(np.single(fitsfile[i].data-(mean_over_per_column.+linef*0.)))
                     else :
                         # if 2D or what ever else 
                         self.Image.append(np.single(fitsfile[i].data-(mean_over_per_column+linef)))
