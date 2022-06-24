@@ -279,7 +279,7 @@ class actfile :
                     elif Bias_cor=='1D' :
                         self.Image.append(np.single(fitsfile[i].data-(mean_over_per_column*0.+linef)))
                     elif Bias_cor=='1X' :
-                        self.Image.append(np.single(fitsfile[i].data-(mean_over_per_column.+linef*0.)))
+                        self.Image.append(np.single(fitsfile[i].data-(mean_over_per_column+linef*0.)))
                     else :
                         # if 2D or what ever else 
                         self.Image.append(np.single(fitsfile[i].data-(mean_over_per_column+linef)))
