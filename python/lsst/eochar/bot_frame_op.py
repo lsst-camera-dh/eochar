@@ -265,7 +265,8 @@ class actfile :
                     # from // overscan  correction per colomn 
                     mean_over_per_column=np.mean(rawl[:,:],axis=0)
                 if xsmooth == '353' :
-                     mean_over_per_column=smooth253(mean_over_per_column)
+                    # we don't smooth the 3 first column (= full ITL pre-scan , part of e2v pre-scan )
+                    mean_over_per_column[3:]=smooth253(mean_over_per_column[3:])
                 # from serial overscan correction per line
                 if ysmooth == '353' :
                      mean_over_per_line=smooth253(mean_over_per_line)
