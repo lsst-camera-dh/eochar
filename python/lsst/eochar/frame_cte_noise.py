@@ -143,7 +143,7 @@ class Ifile :
                         self.selection.append((selection,filenamed))
                         # to be updated with a call to clap
                         #self.clap.append(new_time)
-                        if verbose : print ('%d : Selected %s File %s ' % (self.nkept,selection,filenamed) )
+                        if verbose : print ('%d : Selected %s File %s                                  ' % (self.nkept,selection,filenamed),end='\r' )
                         self.nkept+=1
                         if self.nkept==nkeep and nkeep > 0  :
                              # we selected the number of files requested 
@@ -153,6 +153,7 @@ class Ifile :
                     fitsfile.close()
                     del fitsfile
                     fits_is_open=False
+        if verbose : print ('\n')
         return
     def all_file_from_pickle(self,dirall,root_for_pickle,fkey,verbose,Slow,single_t,nskip,nkeep):
         old_time=[0.]
@@ -772,16 +773,30 @@ class cte :
         #
         y_min=0.
         y_max=0.
+        #
+        step_size=12
+        nb_step=3
+        last_step=nb_step-1
+        nb_plot_max=step_size*nb_step
+        # crude estimate of the log progretion , to estimate what step to get not too many plots (we average  fluxes to limit the number of plots ) 
+        if (self.lmax[ch]-nf < nb_plot_max ) :
+            ratio_step=0.9
+        else :
+            try :
+                ratio_step=(self.cte_flux_s[ch,self.lmax[ch]]/self.cte_flux_s[ch,nf])**(-1./nb_plot_max)
+            except :
+                ratio_step=0.9
         #max_plt=max(int((self.lmax[ch]-nf)/4)+1,9)
         for l in range(nf,self.lmax[ch]) :
-            if ((self.cte_flux_s[ch,l_last]/self.cte_flux_s[ch,l] < 0.9 ) and ( l_last < l )) :
+            if ((self.cte_flux_s[ch,l_last]/self.cte_flux_s[ch,l] < ratio_step ) and ( l_last < l )) :
                 # first test to only plot result for point different enough , second test to be sure that we have already selected something , third test (l<lamx[ch] )   to avoid to plot too saturated guy
-                if im>1 :
+                if im>last_step-1 :
                     if self.serie :
-                        label="%5.1f %s in last Col. " % (self.cte_flux_s[ch,l_last:self.lmax[ch]].mean(axis=0),unit)
+                        label="%5.1f %s in last Col. " % (self.cte_flux_s[ch,l_last:l].mean(axis=0),unit)
                     else : 
-                        label="%5.1f %s in last Line" % (self.cte_flux_s[ch,l_last:self.lmax[ch]].mean(axis=0),unit)
+                        label="%5.1f %s in last Line" % (self.cte_flux_s[ch,l_last:l].mean(axis=0),unit)
                 else :
+                    #    
                     label="%5.1f" % (self.cte_flux_s[ch,l_last:l].mean(axis=0))
                 yplt=self.cte_y_s[ch,l_last:l,:].mean(axis=0)
                 y_min=min(max(min(np.min(yplt)*1.2,0.),-10.),y_min)
@@ -789,7 +804,7 @@ class cte :
                 plt.plot(x,yplt,label=label)
                 l_last=l
                 count+=1
-                if count == 9 and im<2 and l < self.lmax[ch]-1 :
+                if count == step_size and im<last_step and l < self.lmax[ch]-1 :
                     count = 0 
                     #plt.yscale('log')
                     if self.serie :
@@ -815,12 +830,17 @@ class cte :
                     y_min=0
                     y_max=0
                     im+=1
+                    # update the ratio step with what is left to plot
+                    try:
+                        ratio_step=min(0.9,(self.cte_flux_s[ch,self.lmax[ch]]/self.cte_flux_s[ch,l])**(-1./step_size/(nb_step-im)))
+                    except :
+                        ratio_step=0.9
         if count !=0 or l==nf : 
             if self.serie :
                 plt.xlabel('column number (serial overscan)')
             else :
                 plt.xlabel('line number (// overscan)')
-            if im<2 : plt.ylabel('Overscan Signal in '+unit)
+            if im<last_step : plt.ylabel('Overscan Signal in '+unit)
             if self.serie :
                 label="%5.1f %s in last Col. " % (self.cte_flux_s[ch,l_last:self.lmax[ch]].mean(axis=0),unit)
             else : 
