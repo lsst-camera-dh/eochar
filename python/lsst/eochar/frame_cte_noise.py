@@ -29,6 +29,7 @@ import os
 import sys
 import matplotlib.pyplot as plt
 import matplotlib
+import copy
 import time
 import pickle
 matplotlib.rcParams['axes.formatter.useoffset'] = False
@@ -467,7 +468,7 @@ class cte :
         #
         if nb_f_max==0 : return
         #
-        self.first_file=all_file[0]
+        self.first_file=copy.deep_copy(all_file[0])
         #
         cte_noise_std=np.zeros((16,nb_f_max,28))
         #
