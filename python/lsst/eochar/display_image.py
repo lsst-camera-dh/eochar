@@ -63,16 +63,16 @@ def SingleImageIR(image,is_e2v=True):
         # but here you are in stand alone 
         # the default associated to the image area (pre-overscan excluded) are for e2v IR2 files 
         #
-	if (is_e2v) :
-	   first_col=11
-	   first_cover=522	   
-	   first_line=0
-	   first_lower=2002
-	else :
-	    first_col=3
-	    first_cover=512	   
-	    first_line=0
-	    first_lower=2000
+        if (is_e2v) :
+            first_col=11
+            first_cover=522	   
+            first_line=0
+            first_lower=2002
+        else :
+            first_col=3
+            first_cover=512	   
+            first_line=0
+            first_lower=2000
         #
         col_size=first_cover-first_col
         line_size=first_lower-first_line
@@ -102,4 +102,4 @@ def SingleImageIR(image,is_e2v=True):
                        for x in range(first_col,first_cover) :
                             for y in range(first_line,first_lower) : 
                                  spf[y-first_line,xx+col_size-(x-first_col)-1]=image[i][y,x]
-	return spf
+        return spf
