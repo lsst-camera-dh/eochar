@@ -521,10 +521,7 @@ class cte :
                     #
                     self.cte_y[ch,i_cur,:]+=f.fluxp_last[ch][1:]
                     self.cte_y_std[ch,i_cur,:]+=f.fluxp_last_std[ch][1:]**2
-                    if f.fluxp_used[ch][1:] > 0. : 
-                        cte_noise_std[ch,i_cur,:]+=(f.fluxp_last_std[ch][1:])**2*f.fluxp_used[ch][1:]
-                    else :
-                        cte_noise_std[ch,i_cur,:]+=0.
+                    cte_noise_std[ch,i_cur,:]+=(f.fluxp_last_std[ch][1:])**2*f.fluxp_used[ch][1:]
                     self.overscan_std[ch,i_cur]+=(f.over4_line_std[ch])**2
                 #if flux_last==0. : flux_last=1e-6
                 self.cte_flux[ch,i_cur]+=flux_last
@@ -541,7 +538,7 @@ class cte :
             #for l in fl[ch,:] :
             for l in ft[:] :
                 # protection against divide by 0 improbable ?
-                if self.cte_flux[ch,l]==0 : self.cte_flux[ch,l]=1.0e-6
+                if not(self.cte_flux[ch,l]>0.) : self.cte_flux[ch,l]=1.0e-6
                 self.cte_y_s[ch,l_k,:]=self.cte_y[ch,l,:]*gain[ch]/self.nb_file[l]
                 # remark that the 1/n below ...it's because sqrt(1/n) **2 is needed to get the error on the mean , and not the dispersion  . ...
                 self.cte_y_s_std[ch,l_k,:]=np.sqrt(self.cte_y_std[ch,l,:])*gain[ch]/self.nb_file[l]
@@ -557,10 +554,7 @@ class cte :
             if len(self.cte_flux_s[ch,:])==1 : self.lmax[ch]=1
             self.ylev[ch,0:self.lmax[ch]]=(self.cte_y_s[ch,0:self.lmax[ch],0]+self.cte_y_s[ch,0:self.lmax[ch],1])/self.cte_flux_s[ch,0:self.lmax[ch]]/float(self.nb_pixel)
             #self.ylev_std[ch,0:self.lmax[ch]]=self.ylev[ch,0:self.lmax[ch]]*np.sqrt((self.cte_y_s_std[ch,0:self.lmax[ch],0]/self.cte_y_s[ch,0:self.lmax[ch],0])**2+(self.cte_y_s_std[ch,0:self.lmax[ch],1]/self.cte_y_s[ch,0:self.lmax[ch],1])**2)
-            if self.cte_flux_s[ch,0:self.lmax[ch]]> 0. :
-                self.ylev_std[ch,0:self.lmax[ch]]=np.sqrt(self.cte_y_s_std[ch,0:self.lmax[ch],0]**2+self.cte_y_s_std[ch,0:self.lmax[ch],1]**2)/self.cte_flux_s[ch,0:self.lmax[ch]]/float(self.nb_pixel)
-            else :
-                self.ylev_std[ch,0:self.lmax[ch]]=0.
+            self.ylev_std[ch,0:self.lmax[ch]]=np.sqrt(self.cte_y_s_std[ch,0:self.lmax[ch],0]**2+self.cte_y_s_std[ch,0:self.lmax[ch],1]**2)/self.cte_flux_s[ch,0:self.lmax[ch]]/float(self.nb_pixel)
             # re-order and normalize Overscan data 
             self.overscan_std[ch,0:l_ft]=np.sqrt(self.overscan_std[ch,ft]/self.nb_file[ft])*gain[ch]
             # overscan stability
