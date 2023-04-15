@@ -521,7 +521,10 @@ class cte :
                     #
                     self.cte_y[ch,i_cur,:]+=f.fluxp_last[ch][1:]
                     self.cte_y_std[ch,i_cur,:]+=f.fluxp_last_std[ch][1:]**2
-                    cte_noise_std[ch,i_cur,:]+=(f.fluxp_last_std[ch][1:])**2*f.fluxp_used[ch][1:]
+                    if f.fluxp_used[ch][1:] > 0. : 
+                        cte_noise_std[ch,i_cur,:]+=(f.fluxp_last_std[ch][1:])**2*f.fluxp_used[ch][1:]
+                    else :
+                        cte_noise_std[ch,i_cur,:]+=0.
                     self.overscan_std[ch,i_cur]+=(f.over4_line_std[ch])**2
                 #if flux_last==0. : flux_last=1e-6
                 self.cte_flux[ch,i_cur]+=flux_last
@@ -554,7 +557,10 @@ class cte :
             if len(self.cte_flux_s[ch,:])==1 : self.lmax[ch]=1
             self.ylev[ch,0:self.lmax[ch]]=(self.cte_y_s[ch,0:self.lmax[ch],0]+self.cte_y_s[ch,0:self.lmax[ch],1])/self.cte_flux_s[ch,0:self.lmax[ch]]/float(self.nb_pixel)
             #self.ylev_std[ch,0:self.lmax[ch]]=self.ylev[ch,0:self.lmax[ch]]*np.sqrt((self.cte_y_s_std[ch,0:self.lmax[ch],0]/self.cte_y_s[ch,0:self.lmax[ch],0])**2+(self.cte_y_s_std[ch,0:self.lmax[ch],1]/self.cte_y_s[ch,0:self.lmax[ch],1])**2)
-            self.ylev_std[ch,0:self.lmax[ch]]=np.sqrt(self.cte_y_s_std[ch,0:self.lmax[ch],0]**2+self.cte_y_s_std[ch,0:self.lmax[ch],1]**2)/self.cte_flux_s[ch,0:self.lmax[ch]]/float(self.nb_pixel)
+            if self.cte_flux_s[ch,0:self.lmax[ch]]> 0. :
+                self.ylev_std[ch,0:self.lmax[ch]]=np.sqrt(self.cte_y_s_std[ch,0:self.lmax[ch],0]**2+self.cte_y_s_std[ch,0:self.lmax[ch],1]**2)/self.cte_flux_s[ch,0:self.lmax[ch]]/float(self.nb_pixel)
+            else :
+                self.ylev_std[ch,0:self.lmax[ch]]=0.
             # re-order and normalize Overscan data 
             self.overscan_std[ch,0:l_ft]=np.sqrt(self.overscan_std[ch,ft]/self.nb_file[ft])*gain[ch]
             # overscan stability
@@ -622,6 +628,7 @@ class cte :
         # 
         xx=[max(np.min(self.cte_flux_s[:,nf:self.lmax[ch]])*.9,10.),min(2.0e5,np.max(self.cte_flux_s[:,nf:self.lmax[ch]])*1.1)]
         #
+
         pix_col=['b','c']
         pix_sym=['<','>']
         fig=plt.figure(figsize=(10,12))
