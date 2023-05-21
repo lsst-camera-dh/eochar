@@ -317,10 +317,15 @@ class datafile :
         self.first_p_over=first_p_over
         #
         try :
-            self.exptime=float(fitsfile[0].header['EXPTIME'])
+            # the smallest modification for this code to take into account the CCOB is to replace EXPTIME
+            # by CCOBFLUX ... hum sound dangerous ... but we don't have much time to think today ...
+            self.exptime=float(fitsfile[0].header['CCOBFLUX'])
         except :
-            # Paris test bench key value for exposure time is different
-            self.exptime=float(fitsfile[0].header['EXPOSURE'])
+            try:
+                self.exptime=float(fitsfile[0].header['EXPTIME'])
+            except :
+                # Paris test bench key value for exposure time is different
+                self.exptime=float(fitsfile[0].header['EXPOSURE'])
         try :
            self.ccdslot=(fitsfile[0].header['CCDSLOT']).strip()
            self.raftbay=(fitsfile[0].header['RAFTBAY']).strip()
