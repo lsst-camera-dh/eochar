@@ -64,7 +64,7 @@ def SingleImageIR(image,is_e2v=True):
         # the default associated to the image area (pre-overscan excluded) are for e2v IR2 files 
         #
         if (is_e2v) :
-            first_col=11
+            first_col=10
             first_cover=522	   
             first_line=0
             first_lower=2002
