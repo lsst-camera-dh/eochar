@@ -9,8 +9,11 @@ def read_dim(a):
 def SingleImageFITS(fits,image_to_display):
     # display à la ds9 shape 
     # fits : a pointer on a fits image/object of the same type than the one you want to display
-    # image_to_display  :  a table of amp image  with [nb_amplifier] [:,:]  with the amp in the same order than in the fits file 
-    y_size,x_size=read_dim(fits[1].header['DETSIZE'])
+    # image_to_display  :  a table of amp image  with [nb_amplifier] [:,:]  with the amp in the same order than in the fits file
+    try : 
+        y_size,x_size=read_dim(fits[1].header['DETSIZE'])
+    except :
+        y_size,x_size=read_dim(fits[0].header['DETSIZE'])
     nb_amp=len(image_to_display)
     if y_size[1]>4000: 
         print('Image for e2v sensor')
