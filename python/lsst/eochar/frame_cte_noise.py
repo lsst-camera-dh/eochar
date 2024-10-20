@@ -23,6 +23,7 @@ try:
     import pyfits
 except : 
     import astropy.io.fits as pyfits
+
 import numpy as np
 import glob
 import os
@@ -47,10 +48,17 @@ def image_area(image) :
     #
     return int(y[0])-1,int(y[1]),int(x[0])-1,int(x[1])
 
+def OpenFits(filenamed,fsspec_kwargs=None):
+    if fsspec_kwargs==None :
+        return pyfits.open(filenamed)
+    else :
+        return pyfits.open(filenamed,fsspec_kwargs=fsspec_kwargs)
+
+
 #
 class Ifile :
    # Handel ( select et all ) file list from LSST ccd test bench 
-    def __init__(self,dirall=['/Users/antilog/scratch/20160901'],Pickle=False,root_for_pickle='/sps/lsst/DataBE/lpnws5203',fkey={},verbose=False,Slow=True,single_t=False,nskip=0,nkeep=-1):
+    def __init__(self,dirall=['/Users/antilog/scratch/20160901'],Pickle=False,root_for_pickle='/sps/lsst/DataBE/lpnws5203',fkey={},verbose=False,Slow=True,single_t=False,nskip=0,nkeep=-1,fsspec_kwargs=None):
         # dirall : a list of directory/file   to read in  : the file header will be used to select or not the file if fkey is set  or the file will be read from the content of the pickle file (if Pickle is True ) , fkey will also be used for selection. 
         # fkey : {'selection_name' : {'fits_header_name':{'key':value} , ... }  : a triple  dictionary of { 'selection_name' : {header : {key:value}} } , to select a file 
         self.nkept=0
@@ -65,9 +73,10 @@ class Ifile :
         if Pickle : 
             self.all_file_from_pickle(dirall=dirall,root_for_pickle=root_for_pickle,fkey=fkey,verbose=verbose,Slow=Slow,single_t=single_t,nskip=nskip,nkeep=nkeep)
         else : 
-            self.all_file_from_dir(dirall=dirall,fkey=fkey,verbose=verbose,Slow=Slow,single_t=single_t,nskip=nskip,nkeep=nkeep)
+            self.all_file_from_dir(dirall=dirall,fkey=fkey,verbose=verbose,Slow=Slow,single_t=single_t,nskip=nskip,nkeep=nkeep,fsspec_kwargs=fsspec_kwargs)
         return
-    def all_file_from_dir(self,dirall,fkey,verbose,Slow,single_t,nskip,nkeep):
+            
+    def all_file_from_dir(self,dirall,fkey,verbose,Slow,single_t,nskip,nkeep,fsspec_kwargs=None):
        # dirname : can be a directory name or a file with * at the moment it ends by .fz                                                                        
         #  ex : /Users/antilog/scratch/REB_DATA/20160513/linearity                                                                                               
         #  or : /Users/antilog/scratch/REB_DATA/20160513/linearity/reb3*.fz                                                                                      
@@ -109,7 +118,7 @@ class Ifile :
                         local_keep=True
                         if 'key' in sel_id.keys() : 
                             if not(fits_is_open) :
-                                fitsfile=pyfits.open(filenamed)
+                                fitsfile=OpenFits(filenamed,fsspec_kwargs=fsspec_kwargs)
                                 fits_is_open=True
                             for header, key_cur in sel_id['key'].items() :
                                 if not ( local_keep ) : break  
@@ -127,7 +136,7 @@ class Ifile :
                 #
                 if (keep and single_t ) :
                     if not(fits_is_open) :
-                        fitsfile=pyfits.open(filenamed)
+                        fitsfile=OpenFits(filenamed,fsspec_kwargs=fsspec_kwargs)
                         fits_is_open=True
                     new_time=fitsfile[0].header['EXPTIME']
                     if new_time in old_time : 
@@ -138,7 +147,7 @@ class Ifile :
                     self.nseen+=1
                     if self.nseen>nskip :
                         if not(fits_is_open) :
-                            fitsfile=pyfits.open(filenamed)
+                            fitsfile=OpenFits(filenamed,fsspec_kwargs=fsspec_kwargs)
                             fits_is_open=True
                         self.all_file.append(datafile(fitsfile,Slow))
                         self.selection.append((selection,filenamed))
