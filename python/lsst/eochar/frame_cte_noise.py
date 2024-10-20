@@ -87,22 +87,23 @@ class Ifile :
         old_time=[0.]
         fits_is_open=False
         #
-        # fill all_file from the header of the files in dirall . 
-        for dirname in self.directory :
-            # have we allready all the needed file ? 
-            if nkeep> 0 and self.nkept==nkeep : 
-                break
-            if fsspec_kwargs==None : 
+        # fill all_file from the header of the files in dirall .
+        if fsspec_kwargs==None :
+            file_list=[]
+            for dirname in self.directory :
+                # have we allready all the needed file ? 
+                if nkeep> 0 and self.nkept==nkeep : 
+                    break
                 # build the list of file for this directory 
                 if (len(os.path.splitext(dirname)[1])>0) :
-                    file_list=glob.glob(dirname)
+                    file_list+=glob.glob(dirname)
                 else :
-                    file_list=glob.glob("%s/*.fz" % (dirname))
-                file_list.sort()
-            else :
-                file_list=dirname 
-            # loop on files to select them if needed  
-            for filenamed  in file_list :
+                    file_list+=glob.glob("%s/*.fz" % (dirname))
+            file_list.sort()         
+        else:
+            file_list= self.directory 
+        # loop on files to select them if needed  
+        for filenamed  in file_list :
                 #
                 keep=True
                 if len(fkey)==0 :  
