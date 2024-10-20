@@ -91,13 +91,16 @@ class Ifile :
         for dirname in self.directory :
             # have we allready all the needed file ? 
             if nkeep> 0 and self.nkept==nkeep : 
-                break  
-            # build the list of file for this directory 
-            if (len(os.path.splitext(dirname)[1])>0) :
-                file_list=glob.glob(dirname)
+                break
+            if fsspec_kwargs==None : 
+                # build the list of file for this directory 
+                if (len(os.path.splitext(dirname)[1])>0) :
+                    file_list=glob.glob(dirname)
+                else :
+                    file_list=glob.glob("%s/*.fz" % (dirname))
+                file_list.sort()
             else :
-                file_list=glob.glob("%s/*.fz" % (dirname))
-            file_list.sort()
+                file_list=dirname 
             # loop on files to select them if needed  
             for filenamed  in file_list :
                 #
