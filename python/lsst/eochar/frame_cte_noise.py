@@ -565,7 +565,8 @@ class cte :
                 self.cte_noise_s_std[ch,l_k]=np.sqrt(cte_noise_std[ch,l,2:].std(axis=0)/(self.nb_file[l])/(26))*gain[ch]
                 l_k+=1
             for l in range(1,l_ft) :
-                 if  self.cte_flux_s[ch,l]<self.cte_flux_s[ch,self.lmax[ch]] and self.cte_flux_s[ch,self.lmax[ch]] > 100000    :
+          #       if  self.cte_flux_s[ch,l]<self.cte_flux_s[ch,self.lmax[ch]] and self.cte_flux_s[ch,self.lmax[ch]] > 100000    :
+                 if  self.cte_flux_s[ch,l]<self.cte_flux_s[ch,self.lmax[ch]] and self.cte_flux_s[ch,self.lmax[ch]] > 20000    :
                      self.lmax[ch]=l
                      break
                  self.lmax[ch]=l
