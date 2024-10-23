@@ -566,7 +566,7 @@ class cte :
                 l_k+=1
             for l in range(1,l_ft) :
           #       if  self.cte_flux_s[ch,l]<self.cte_flux_s[ch,self.lmax[ch]] and self.cte_flux_s[ch,self.lmax[ch]] > 100000    :
-                 if  self.cte_flux_s[ch,l]<self.cte_flux_s[ch,self.lmax[ch]] and self.cte_flux_s[ch,self.lmax[ch]] > 20000    :
+                 if  self.cte_flux_s[ch,l]-self.cte_flux_s[ch,self.lmax[ch]]<-100 and self.cte_flux_s[ch,self.lmax[ch]] > 20000    :
                      self.lmax[ch]=l
                      break
                  self.lmax[ch]=l
