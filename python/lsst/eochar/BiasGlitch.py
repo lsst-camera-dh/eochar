@@ -155,7 +155,7 @@ def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,dist=1.5):
         for iamp in range(nb_amp) :
             met=all_met[imet]
             plt.subplot(4,int(nb_amp/4),iamp+1)
-            label='%s (hdu=%d), std=%6.3f ADU' % (ch[iamp],iamp+1,ref[imet,iamp,:].std())
+            label='%s (hdu=%d), std=%6.3f ADU' % (ch[iamp],ref[imet,iamp,:].std())
             plt.gca().set_title(label)
             plt.plot(range(nb_file),ref[imet,iamp,:],color='black')
                 #plt.plot(ref[cluster[imet,iamp,icl,0:cluster_size[imet,iamp,icl]]],color=color[icl],label=label)
@@ -173,15 +173,16 @@ def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,dist=1.5):
         # for each CCD plot the noise estimated by diferent part of the bias / image 
         fig=plt.figure(figsize=[16,16])
          #                        
-        txt='run %s , RAFT %s CCD %s \n noise  per event for each amplifier   ' % (run_cur,raft_cur,ccd_cur) 
+        txt='run %s , RAFT %s CCD %s \n noise in ADU  per event for each amplifier   ' % (run_cur,raft_cur,ccd_cur) 
         plt.suptitle(txt)
         # for each type onf noise
         for imet in range(3) : 
             for iamp in range(nb_amp) :
                 met=all_met[imet]
                 plt.subplot(4,int(nb_amp/4),iamp+1)
-                label='%s (hdu=%d), <std>_%s=%6.3f ADU' % (ch[iamp],iamp+1,noise_met[imet],ampnoise[:,iamp,imet].mean())
-                plt.gca().set_title(label)
+                if imet==0 :
+                    label='%s,%s=%4.2f,%s=%4.2f' % (ch[iamp],iamp+1,noise_met[1],,np.median(ampnoise[:,iamp,1]),noise_met[2],np.median(ampnoise[:,iamp,2]))
+                    plt.gca().set_title(label)
                 plt.plot(range(nb_file),ampnoise[:,iamp,imet],color=color[imet])
                 if iamp>=nb_amp-4 :
                     label='in run event number'
