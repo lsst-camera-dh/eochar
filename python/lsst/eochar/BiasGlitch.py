@@ -14,6 +14,8 @@ def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,dist=1.5):
     prescan=np.zeros((nb_file,nb_amp,2048,first_col))
     overser=np.zeros((nb_file,nb_amp,2048))
     overpar=np.zeros((nb_file,nb_amp,576))
+    ampnoise=np.zeros((nb_file,nb_amp,3))
+    noise_met=['Image','Serial','//']
     # loop on files
     for ifits in range(nb_file):
         fits=pyfits.open(file90[ifits],cache=False, fsspec_kwargs=fsspec_kwargs)
@@ -23,7 +25,14 @@ def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,dist=1.5):
             # overscan dans la direction serie , on prend la moyen de l'overscan de chaque ligne :de la colomne 1er overscan+2 à la fin
             overser[ifits,iamp,:]=fits[iamp+1].data[:,first_cover+2:].mean(axis=1)
             # overscan dans la direction // , on prend la moyen de l'overscan de chaque colome :de la ligne 1er overscan+2 à la fin
-            overpar[ifits,iamp,:]=fits[iamp+1].data[first_lower+2:,:].mean(axis=0)
+            overpar[ifits,iamp,:]=fits[iamp+1].data[first_lover+2:,:].mean(axis=0)
+            # noise in most of the image area
+            ampnoise[ifits,iamp,0]=fits[iamp+1].data[first_line+50:first_lover-50,first_col+50:first_cover-50].std(axis=1).mean()
+            # noise in  the serial overscan
+            ampnoise[ifits,iamp,1]=fits[iamp+1].data[first_line+3:,first_cover+3:].std(axis=1).mean()
+            # noise in  the // overscan 
+            ampnoise[ifits,iamp,2]=fits[iamp+1].data[first_lover+3:,first_col+3:].std(axis=0).mean()
+           
         fits.close()
 #    return nb_file,prescan,overser,overpar
 #        
@@ -161,7 +170,30 @@ def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,dist=1.5):
         rawPlotFile='BiasOverPar'
         SaveFig(fig,rawPlotFile,run_cur=run_cur,raft_cur=raft_cur,ccd_cur=ccd_cur)
         #
-        
+        # for each CCD plot the noise estimated by diferent part of the bias / image 
+        fig=plt.figure(figsize=[16,16])
+         #                        
+        txt='run %s , RAFT %s CCD %s \n noise  per event for each amplifier   ' % (run_cur,raft_cur,ccd_cur) 
+        plt.suptitle(txt)
+        # for each type onf noise
+        for imet in range(3) : 
+            for iamp in range(nb_amp) :
+                met=all_met[imet]
+                plt.subplot(4,int(nb_amp/4),iamp+1)
+                label='%s (hdu=%d), <std>_%s=%6.3f ADU' % (ch[iamp],iamp+1,noise_met[imet],ampnoise[:,iamp,imet].mean())
+                plt.gca().set_title(label)
+                plt.plot(range(nb_file),ampnoise[:,iamp,imet],color=color[imet])
+                if iamp>=nb_amp-4 :
+                    label='in run event number'
+                    plt.xlabel(label)
+                    if iamp%4 == 0 : 
+                        label='Measured Noise per image '
+                        plt.ylabel(label)
+                        #plt.ylim(ymin,ymax)                        
+        plt.show() 
+        rawPlotFile='Noise'
+        SaveFig(fig,rawPlotFile,run_cur=run_cur,raft_cur=raft_cur,ccd_cur=ccd_cur)
+        #
         # for each CCD plot the amplifier with the largest dispersion plot all cluster methods results
         fig=plt.figure(figsize=[16,16])
         # get the method and amp with the largest sigma 
@@ -232,7 +264,7 @@ def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,dist=1.5):
         rawPlotFile='BiasClusterAppliedToOverPar'
         SaveFig(fig,rawPlotFile,run_cur=run_cur,raft_cur=raft_cur,ccd_cur=ccd_cur)
         #
-        # impact of a clusterization on overscan based on a give amp / method 
+        # impact of a clusterization on overscan based on a given amp / method 
         if nb_amp==8  :
             n_sub=1
         else :
