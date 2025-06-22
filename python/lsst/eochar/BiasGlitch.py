@@ -155,7 +155,7 @@ def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,dist=1.5):
         for iamp in range(nb_amp) :
             met=all_met[imet]
             plt.subplot(4,int(nb_amp/4),iamp+1)
-            label='%s (hdu=%d), std=%6.3f ADU' % (ch[iamp],ref[imet,iamp,:].std())
+            label='%s (hdu=%d), std=%6.3f ADU' % (ch[iamp],iamp+1,ref[imet,iamp,:].std())
             plt.gca().set_title(label)
             plt.plot(range(nb_file),ref[imet,iamp,:],color='black')
                 #plt.plot(ref[cluster[imet,iamp,icl,0:cluster_size[imet,iamp,icl]]],color=color[icl],label=label)
