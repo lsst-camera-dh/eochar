@@ -27,11 +27,11 @@ def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,dist=1.5):
             # overscan dans la direction // , on prend la moyen de l'overscan de chaque colome :de la ligne 1er overscan+2 à la fin
             overpar[ifits,iamp,:]=fits[iamp+1].data[first_lover+2:,:].mean(axis=0)
             # noise in most of the image area
-            ampnoise[ifits,iamp,0]=fits[iamp+1].data[first_line+50:first_lover-50,first_col+50:first_cover-50].std(axis=1).mean()
+            ampnoise[ifits,iamp,0]=np.median(fits[iamp+1].data[first_line+50:first_lover-50,first_col+50:first_cover-50].std(axis=1))
             # noise in  the serial overscan
-            ampnoise[ifits,iamp,1]=fits[iamp+1].data[first_line+3:,first_cover+3:].std(axis=1).mean()
+            ampnoise[ifits,iamp,1]=np.median(fits[iamp+1].data[first_line+3:,first_cover+3:].std(axis=1))
             # noise in  the // overscan 
-            ampnoise[ifits,iamp,2]=fits[iamp+1].data[first_lover+3:,first_col+3:].std(axis=0).mean()
+            ampnoise[ifits,iamp,2]=np.median(fits[iamp+1].data[first_lover+3:,first_col+3:].std(axis=0))
            
         fits.close()
 #    return nb_file,prescan,overser,overpar
@@ -371,5 +371,6 @@ def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,dist=1.5):
     to_return['std_no_cluster']=std_no_cluster
     to_return['ref']=ref
     to_return['ref_mean']=ref_mean
+    to_return['noise']=ampnoise
 
     return to_return
