@@ -181,7 +181,7 @@ def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,dist=1.5):
                 met=all_met[imet]
                 plt.subplot(4,int(nb_amp/4),iamp+1)
                 if imet==0 :
-                    label='%s,%s=%4.2f,%s=%4.2f' % (ch[iamp],iamp+1,noise_met[1],,np.median(ampnoise[:,iamp,1]),noise_met[2],np.median(ampnoise[:,iamp,2]))
+                    label='%s,%s=%4.2f,%s=%4.2f' % (ch[iamp],noise_met[1],np.median(ampnoise[:,iamp,1]),noise_met[2],np.median(ampnoise[:,iamp,2]))
                     plt.gca().set_title(label)
                 plt.plot(range(nb_file),ampnoise[:,iamp,imet],color=color[imet])
                 if iamp>=nb_amp-4 :
