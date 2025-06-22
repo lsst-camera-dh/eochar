@@ -1,4 +1,4 @@
-def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,dist=1.5):
+def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,show=False,dist=1.5):
 #def FileForBiasEstimator(run_cur,raft_cur,ccd_cur,file90):
     #
     #
@@ -166,7 +166,7 @@ def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,dist=1.5):
                 label='Per event // overscan median (in ADU)  \n centred to mean in run'
                 plt.ylabel(label)
             plt.ylim(ymin,ymax)                        
-        plt.show() 
+        if show : plt.show() 
         rawPlotFile='BiasOverPar'
         SaveFig(fig,rawPlotFile,run_cur=run_cur,raft_cur=raft_cur,ccd_cur=ccd_cur)
         #
@@ -191,7 +191,7 @@ def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,dist=1.5):
                         label='Measured Noise per image '
                         plt.ylabel(label)
                         #plt.ylim(ymin,ymax)                        
-        plt.show() 
+        if show :plt.show() 
         rawPlotFile='Noise'
         SaveFig(fig,rawPlotFile,run_cur=run_cur,raft_cur=raft_cur,ccd_cur=ccd_cur)
         #
@@ -231,7 +231,7 @@ def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,dist=1.5):
             plt.ylabel(ylabel[imet])
             plt.ylim(ymin,ymax)                        
             plt.legend()
-        plt.show() 
+        if show :plt.show() 
         rawPlotFile='BiasEstimator'
         SaveFig(fig,rawPlotFile,run_cur=run_cur,raft_cur=raft_cur,ccd_cur=ccd_cur,hdu=iamp_max+1)
         # Does the best split in pre1+2 does a correct classification of over_// ? 
@@ -261,7 +261,7 @@ def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,dist=1.5):
                     # first column , we can put the y label 
                     label='Bias ( %s ) for amp %s ' % (all_met[7],ch16[iamp]) 
                     plt.ylabel(label)
-        plt.show()    
+        if show :plt.show()    
         rawPlotFile='BiasClusterAppliedToOverPar'
         SaveFig(fig,rawPlotFile,run_cur=run_cur,raft_cur=raft_cur,ccd_cur=ccd_cur)
         #
@@ -358,7 +358,7 @@ def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,dist=1.5):
             label='all data'
             plt.plot(range(3,nb_col),overpar[:,iamp,3:].std(axis=0),color='black',label=label)
         #
-        plt.show()
+        if show :plt.show()
         rawPlotFile='BiasClusterOverParDisper'
         SaveFig(fig,rawPlotFile,run_cur=run_cur,raft_cur=raft_cur,ccd_cur=ccd_cur)
     # prepare the return dictionary 
