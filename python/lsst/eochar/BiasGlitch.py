@@ -17,7 +17,7 @@ def ProcessNoise(run_cur,raft_cur,ccd_cur,exp_id,plot=True,show=False):
         nb_amp=16
     #
     nb_exp=len(exp_id)
-    ampnoise=np.zeros((nb_file,nb_amp,3,2))
+    ampnoise=np.zeros((nb_exp,nb_amp,3,2))
     # loop on files
     for iexp in range(nb_exp):
         raw = butler.get('raw', detector=detector, exposure=exp_id[iexp])
