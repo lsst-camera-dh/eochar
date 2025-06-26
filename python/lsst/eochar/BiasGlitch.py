@@ -129,9 +129,7 @@ def ProcessNoise(run_cur,raft_cur,ccd_cur,exp_id,plot=True,show=False):
         rawPlotFile='Noise'
         SaveFig(fig,rawPlotFile,run_cur=run_cur,raft_cur=raft_cur,ccd_cur=ccd_cur)
     # prepare the return dictionary 
-    to_return={}
-    to_return['noise']=ampnoise
-    return to_return
+    return ampnoise
 def ProcessGlitch(run_cur,raft_cur,ccd_cur,file90,plot=True,show=False,dist=1.5):
 #def FileForBiasEstimator(run_cur,raft_cur,ccd_cur,file90):
     #
