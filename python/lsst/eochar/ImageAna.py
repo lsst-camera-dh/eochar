@@ -71,7 +71,7 @@ class ImageAna :
         # Noise analysis
         if noise_analysis :
                 # noise in most of the image area per 5x5 bin after bias subtraction
-                nx,ny=np.shape(self.image[index,self.first_l:self.first_l_over,self.first_c:self.first_c_over])
+                ny,nx=np.shape(self.image[index,self.first_l:self.first_l_over,self.first_c:self.first_c_over])
                 nx5=int(nx/5)
                 ny5=int(ny/5)
                 nx0=int((nx-5*nx5)/2)+self.first_c
