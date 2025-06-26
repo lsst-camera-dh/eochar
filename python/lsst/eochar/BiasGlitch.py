@@ -28,7 +28,7 @@ def ProcessNoise(run_cur,raft_cur,ccd_cur,exp_id,plot=True,show=False):
             amp_cur=amp.getName()
             myimage.bias_cor(amp_cur,over_c='2D',over_l='2D',skip_c_over=0,skip_l_over=0,noise_analysis=True)
         ampnoise[iexp,:,:,:]=np.copy(myimage.amp_noise[:,:,:])
-        myimage.del()
+        myimage.delete()
 
    if plot  :
         # for each CCD plot the bias and image level estimated by diferent part of the bias / image 
