@@ -195,49 +195,49 @@ def ProcessGlitch(run_cur,raft_cur,ccd_cur,file90,plot=True,show=False,dist=1.5)
         met=all_met[imet]
         for iamp in range(nb_amp) :
             match met :
-            case "pre1":
-            ref_mean[imet,iamp]=np.mean(prescan[:,iamp,:,1])
-            ref[imet,iamp,:]=np.mean(prescan[:,iamp,:,1], axis=1)-ref_mean[imet,iamp]
-            ylabel[imet]='Bias from <prescan[1]> \n centred to mean in run'
-            case "pre1-pre0":
-            ref_mean[imet,iamp]=np.mean(prescan[:,iamp,:,1])-np.mean(prescan[:,iamp,:,0])
-            ref[imet,iamp,:]=np.mean(prescan[:,iamp,:,1], axis=1)-np.mean(prescan[:,iamp,:,0],axis=1)-ref_mean[imet,iamp]
-            ylabel[imet]='Bias from <prescan[1]>-<prescan[0]> \n centred to mean in run'
-            case "pre1&pre2":
-            ref_mean[imet,iamp]=np.mean(prescan[:,iamp,:,1:3])
-            ref[imet,iamp,:]=np.mean(np.mean(prescan[:,iamp,:,1:3], axis=2),axis=1)-ref_mean[imet,iamp]
-            ylabel[imet]='Bias from <prescan[1]&[2]> '
-            case "pre1&pre2-pre0":
-            ref_mean[imet,iamp]=np.mean(prescan[:,iamp,:,1:3])-np.mean(prescan[:,iamp,:,0])
-            ref[imet,iamp,:]=np.mean(np.mean(prescan[:,iamp,:,1:3], axis=2),axis=1)-np.mean(prescan[:,iamp,:,0], axis=1)-ref_mean[imet,iamp]
-            ylabel[imet]='Bias from <prescan[1]&[2]>-<prescan[0]> \n centred to mean in run'
-            case "over_serie":
-            ref_mean[imet,iamp]=np.mean(overser[:,iamp,:])
-            ref[imet,iamp,:]=np.mean(overser[:,iamp,:],axis=1)-ref_mean[imet,iamp]
-            ylabel[imet]='Bias from <SerialOverscan>'
-            case "over_serie-pre0":
-            ref_mean[imet,iamp]=np.mean(overser[:,iamp,:])-np.mean(prescan[:,iamp,:,0])
-            ref[imet,iamp,:]=np.mean(overser[:,iamp,:],axis=1)-np.mean(prescan[:,iamp,:,0], axis=1)-ref_mean[imet,iamp]
-            ylabel[imet]='Bias from <SerialOverscan>-<prescan[0]> \n centred to mean in run'
-            case "over_//":
-            ref_mean[imet,iamp]=np.median(overpar[:,iamp,3:])
-            ref[imet,iamp,:]=np.median(overpar[:,iamp,3:],axis=1)-ref_mean[imet,iamp]
-            ylabel[imet]='Bias from med(//Overscan)  '
-            case "over_//-pre0":
-            ref_mean[imet,iamp]=np.median(overpar[:,iamp,3:])-np.mean(prescan[:,iamp,:,0])
-            ref[imet,iamp,:]=np.median(overpar[:,iamp,3:],axis=1)-np.mean(prescan[:,iamp,:,0], axis=1)-ref_mean[imet,iamp]
-            ylabel[imet]='Bias from med(//Overscan)-<prescan[0]> \n centred to mean in run' 
-            case _:
-            print("unknow config")
-            break  
-        #for imet in range(nb_met)  :
-        #    met=all_met[imet]
-        #    for iamp in range(nb_amp) :                    
-        for iref in range(nb_file) : 
-            ref_cur=ref[imet,iamp,iref]
-            found=False
-            for icl in range(icluster[imet,iamp]):
-                if found : break
+                case "pre1":
+                    ref_mean[imet,iamp]=np.mean(prescan[:,iamp,:,1])
+                    ref[imet,iamp,:]=np.mean(prescan[:,iamp,:,1], axis=1)-ref_mean[imet,iamp]
+                    ylabel[imet]='Bias from <prescan[1]> \n centred to mean in run'
+                case "pre1-pre0":
+                    ref_mean[imet,iamp]=np.mean(prescan[:,iamp,:,1])-np.mean(prescan[:,iamp,:,0])
+                    ref[imet,iamp,:]=np.mean(prescan[:,iamp,:,1], axis=1)-np.mean(prescan[:,iamp,:,0],axis=1)-ref_mean[imet,iamp]
+                    ylabel[imet]='Bias from <prescan[1]>-<prescan[0]> \n centred to mean in run'
+                case "pre1&pre2":
+                    ref_mean[imet,iamp]=np.mean(prescan[:,iamp,:,1:3])
+                    ref[imet,iamp,:]=np.mean(np.mean(prescan[:,iamp,:,1:3], axis=2),axis=1)-ref_mean[imet,iamp]
+                    ylabel[imet]='Bias from <prescan[1]&[2]> '
+                case "pre1&pre2-pre0":
+                    ref_mean[imet,iamp]=np.mean(prescan[:,iamp,:,1:3])-np.mean(prescan[:,iamp,:,0])
+                    ref[imet,iamp,:]=np.mean(np.mean(prescan[:,iamp,:,1:3], axis=2),axis=1)-np.mean(prescan[:,iamp,:,0], axis=1)-ref_mean[imet,iamp]
+                    ylabel[imet]='Bias from <prescan[1]&[2]>-<prescan[0]> \n centred to mean in run'
+                case "over_serie":
+                    ref_mean[imet,iamp]=np.mean(overser[:,iamp,:])
+                    ref[imet,iamp,:]=np.mean(overser[:,iamp,:],axis=1)-ref_mean[imet,iamp]
+                    ylabel[imet]='Bias from <SerialOverscan>'
+                case "over_serie-pre0":
+                    ref_mean[imet,iamp]=np.mean(overser[:,iamp,:])-np.mean(prescan[:,iamp,:,0])
+                    ref[imet,iamp,:]=np.mean(overser[:,iamp,:],axis=1)-np.mean(prescan[:,iamp,:,0], axis=1)-ref_mean[imet,iamp]
+                    ylabel[imet]='Bias from <SerialOverscan>-<prescan[0]> \n centred to mean in run'
+                case "over_//":
+                    ref_mean[imet,iamp]=np.median(overpar[:,iamp,3:])
+                    ref[imet,iamp,:]=np.median(overpar[:,iamp,3:],axis=1)-ref_mean[imet,iamp]
+                    ylabel[imet]='Bias from med(//Overscan)  '
+                case "over_//-pre0":
+                    ref_mean[imet,iamp]=np.median(overpar[:,iamp,3:])-np.mean(prescan[:,iamp,:,0])
+                    ref[imet,iamp,:]=np.median(overpar[:,iamp,3:],axis=1)-np.mean(prescan[:,iamp,:,0], axis=1)-ref_mean[imet,iamp]
+                    ylabel[imet]='Bias from med(//Overscan)-<prescan[0]> \n centred to mean in run' 
+                case _:
+                    print("unknow config")
+                    break  
+    #for imet in range(nb_met)  :
+    #    met=all_met[imet]
+    #    for iamp in range(nb_amp) :                    
+            for iref in range(nb_file) : 
+                ref_cur=ref[imet,iamp,iref]
+                found=False
+                for icl in range(icluster[imet,iamp]):
+                    if found : break
                     for icl_cur in range(cluster_size[imet,iamp,icl]) : 
                         dist_cur=abs(ref[imet,iamp,cluster[imet,iamp,icl,icl_cur]]-ref_cur)
                         if dist_cur<dist : 
@@ -245,25 +245,23 @@ def ProcessGlitch(run_cur,raft_cur,ccd_cur,file90,plot=True,show=False,dist=1.5)
                             cluster_size[imet,iamp,icl]+=1
                             found=True
                             break
-                        if not(found) : 
-                            # create a new cluster
-                            if icluster[imet,iamp] == nb_cluster_max-1 :
-                                # too many cluster , there is probably a defect in the image that disturb the process 
-                                # so we should identify this clustering as failled for this amp , and fill its result in the last identified cluster
-                                cluster[imet,iamp,nb_cluster_max-2,cluster_size[imet,iamp,nb_cluster_max-2]]=iref
-                                cluster_size[imet,iamp,nb_cluster_max-2]+=1
-                            else :
-                                cluster[imet,iamp,icluster[imet,iamp],cluster_size[imet,iamp,icluster[imet,iamp]]]=iref
-                                cluster_size[imet,iamp,icluster[imet,iamp]]+=1
-                                icluster[imet,iamp]+=1
-                                #
-                                for icl in range(icluster[imet,iamp]) : 
-                                    mean[imet,iamp,icl]=ref[imet,iamp,cluster[imet,iamp,icl,0:cluster_size[imet,iamp,icl]]].mean()
-                                    std[imet,iamp,icl]=ref[imet,iamp,cluster[imet,iamp,icl,0:cluster_size[imet,iamp,icl]]].std()
-                                    std_no_cluster[imet,iamp]=ref[imet,iamp,:].std()
+                if not(found) : 
+                    # create a new cluster
+                    if icluster[imet,iamp] == nb_cluster_max :
+                        # too many cluster , there is probably a defect in the image that disturb the process 
+                        # so we should identify this clustering as failled for this amp , and fill its result in the last identified cluster
+                        cluster[imet,iamp,nb_cluster_max-1,cluster_size[imet,iamp,nb_cluster_max-1]]=iref
+                        cluster_size[imet,iamp,nb_cluster_max-1]+=1
+                    else :
+                        cluster[imet,iamp,icluster[imet,iamp],cluster_size[imet,iamp,icluster[imet,iamp]]]=iref
+                        cluster_size[imet,iamp,icluster[imet,iamp]]+=1
+                        icluster[imet,iamp]+=1
+            #
+            for icl in range(icluster[imet,iamp]) : 
+                mean[imet,iamp,icl]=ref[imet,iamp,cluster[imet,iamp,icl,0:cluster_size[imet,iamp,icl]]].mean()
+                std[imet,iamp,icl]=ref[imet,iamp,cluster[imet,iamp,icl,0:cluster_size[imet,iamp,icl]]].std()
+            std_no_cluster[imet,iamp]=ref[imet,iamp,:].std()
 
-
- 
     if plot  :
         # plot the results :
         # for each CCD plot the raw dispersion of the // over 
