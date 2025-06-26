@@ -245,7 +245,7 @@ def ProcessGlitch(run_cur,raft_cur,ccd_cur,file90,plot=True,show=False,dist=1.5)
                             break
                 if not(found) : 
                     # create a new cluster
-                    if icluster[imet,iamp] == nb_cluster_max :
+                    if icluster[imet,iamp] == nb_cluster_max-1 :
                         # too many cluster , there is probably a defect in the image that disturb the process 
                         # so we should identify this clustering as failled for this amp , and fill its result in the last identified cluster
                         cluster[imet,iamp,nb_cluster_max-1,cluster_size[imet,iamp,nb_cluster_max-1]]=iref
