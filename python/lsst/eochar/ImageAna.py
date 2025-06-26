@@ -83,7 +83,7 @@ class ImageAna :
                 self.amp_noise[index,0,0]=np.median(E)
                 self.amp_noise[index,0,1]=np.median(np.sqrt(EX2-E**2))
                 # noise in  the serial overscan
-                self.amp_noise[index,1,0]=np.median(image_2d[self.first_l+skip_l_over:,self.self.first_c_over+skip_c_over:])
+                self.amp_noise[index,1,0]=np.median(image_2d[self.first_l+skip_l_over:,self.first_c_over+skip_c_over:])
                 self.amp_noise[index,1,1]=np.median(image_2d[self.first_l+skip_l_over:,self.first_c_over+skip_c_over:].std(axis=1))
                 # noise in  the // overscan 
                 self.amp_noise[index,2,0]=np.median(image_2d[self.first_l_over+skip_l_over:,self.first_c+skip_c_over:])       
