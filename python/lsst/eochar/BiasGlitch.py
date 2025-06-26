@@ -1,4 +1,138 @@
-def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,show=False,dist=1.5):
+sensors_8ch=['SW0','SW1']
+def ProcessNoise(run_cur,raft_cur,ccd_cur,exp_id,plot=True,show=False):
+    # run_cur  : Top Subdirectory to save the data and plots
+    # raft_cur : Raft Name  
+    # ccd_cur  : CCD Name
+    # exp_id[] : table with all exposure_id to use
+    # plot     : True/False : do we produce the control plots
+    # show     : True/False : do we plot on screen ( it always save the plot on disk )
+    # The code will us global variables , in particular : "butler" to access (butler.get) the expsoure_id  data .
+    #
+    # Compute the noise per amp 
+    detector='%s_%s' % (raft_cur,ccd_cur)
+    #  okay we could ask to the butler ... I'm lazzy 
+    if ccd_cur in sensors_8ch :
+        nb_amp=8
+    else : 
+        nb_amp=16
+    #
+    nb_exp=len(exp_id)
+    ampnoise=np.zeros((nb_file,nb_amp,3,2))
+    # loop on files
+    for iexp in range(nb_exp):
+        raw = butler.get('raw', detector=detector, exposure=exp_id[iexp])
+        ccd = raw.getDetector()
+        myimage=ImageAna(raw)
+        iamp=0
+        for amp in ccd.getAmplifiers():
+            amp_cur=amp.getName()
+            myimage.bias_cor(amp_cur,over_c='2D',over_l='2D',skip_c_over=0,skip_l_over=0,noise_analysis=True)
+        ampnoise[iexp,:,:,:]=np.copy(myimage.amp_noise[:,:,:])
+        myimage.del()
+
+   if plot  :
+        # for each CCD plot the bias and image level estimated by diferent part of the bias / image 
+        fig=plt.figure(figsize=[16,16])
+         #                        
+        txt='run %s , RAFT %s CCD %s \n Bias Residual in Image Area  (in ADU) after 2D Bias Correction \n median of average in 5x5 boxes per event for each amplifier   ' % (run_cur,raft_cur,ccd_cur) 
+        plt.suptitle(txt)
+        # for each type onf noise
+        for imet in range(1) : 
+            for iamp in range(nb_amp) :
+                met=all_met[imet]
+                plt.subplot(4,int(nb_amp/4),iamp+1)
+                if imet==0 :
+                    label='%s,%s=%4.2f,%s=%4.2f' % (ch[iamp],noise_met[1],np.median(ampnoise[:,iamp,1,0]),noise_met[2],np.median(ampnoise[:,iamp,2,0]))
+                    plt.gca().set_title(label)
+                plt.plot(range(nb_file),ampnoise[:,iamp,imet,0],color=color[imet])
+                if iamp>=nb_amp-4 :
+                    label='in run event number'
+                    plt.xlabel(label)
+                    if iamp%4 == 0 : 
+                        label='Measured Residual Bias per image'
+                        plt.ylabel(label)
+                        #plt.ylim(ymin,ymax)                        
+        if show :plt.show() 
+        rawPlotFile='BiasResidualLevel'
+        SaveFig(fig,rawPlotFile,run_cur=run_cur,raft_cur=raft_cur,ccd_cur=ccd_cur)
+        # for each CCD plot the bias and image level estimated by diferent part of the bias / image 
+        fig=plt.figure(figsize=[16,16])
+         #                        
+        txt='run %s , RAFT %s CCD %s \n Bias level in Overscan Area  (in ADU)  \n  per event for each amplifier   ' % (run_cur,raft_cur,ccd_cur) 
+        plt.suptitle(txt)
+        # for each type onf noise
+        for imet in range(1,3) : 
+            for iamp in range(nb_amp) :
+                met=all_met[imet]
+                plt.subplot(4,int(nb_amp/4),iamp+1)
+                if imet==0 :
+                    label='%s,%s=%4.2f,%s=%4.2f' % (ch[iamp],noise_met[1],np.median(ampnoise[:,iamp,1,0]),noise_met[2],np.median(ampnoise[:,iamp,2,0]))
+                    plt.gca().set_title(label)
+                plt.plot(range(nb_file),ampnoise[:,iamp,imet,0],color=color[imet])
+                if iamp>=nb_amp-4 :
+                    label='in run event number'
+                    plt.xlabel(label)
+                    if iamp%4 == 0 : 
+                        label='Measured Bias per image '
+                        plt.ylabel(label)
+                        #plt.ylim(ymin,ymax)                        
+        if show :plt.show() 
+        rawPlotFile='BiasOverScanLevel'
+        SaveFig(fig,rawPlotFile,run_cur=run_cur,raft_cur=raft_cur,ccd_cur=ccd_cur)
+        # for each CCD plot the noise estimated by diferent part of the bias / image 
+        fig=plt.figure(figsize=[16,16])
+         #                        
+        txt='run %s , RAFT %s CCD %s \n noise in ADU  per event for each amplifier   ' % (run_cur,raft_cur,ccd_cur) 
+        plt.suptitle(txt)
+        # for each type onf noise
+        for imet in range(1) : 
+            for iamp in range(nb_amp) :
+                met=all_met[imet]
+                plt.subplot(4,int(nb_amp/4),iamp+1)
+                if imet==0 :
+                    label='%s,%s=%4.2f,%s=%4.2f' % (ch[iamp],noise_met[1],np.median(ampnoise[:,iamp,1,1]),noise_met[2],np.median(ampnoise[:,iamp,2,1]))
+                    plt.gca().set_title(label)
+                plt.plot(range(nb_file),ampnoise[:,iamp,imet,1],color=color[imet])
+                if iamp>=nb_amp-4 :
+                    label='in run event number'
+                    plt.xlabel(label)
+                    if iamp%4 == 0 : 
+                        label=' Noise per image (Median of 5x5 bin) '
+                        plt.ylabel(label)
+                        #plt.ylim(ymin,ymax)                        
+        if show :plt.show() 
+        rawPlotFile='Noise'
+        SaveFig(fig,rawPlotFile,run_cur=run_cur,raft_cur=raft_cur,ccd_cur=ccd_cur)
+
+        # for each CCD plot the noise estimated by diferent part of the bias / image 
+        fig=plt.figure(figsize=[16,16])
+         #                        
+        txt='run %s , RAFT %s CCD %s \n noise in ADU  per event for each amplifier   ' % (run_cur,raft_cur,ccd_cur) 
+        plt.suptitle(txt)
+        # for each type onf noise
+        for imet in range(1,3) : 
+            for iamp in range(nb_amp) :
+                met=all_met[imet]
+                plt.subplot(4,int(nb_amp/4),iamp+1)
+                if imet==0 :
+                    label='%s,%s=%4.2f,%s=%4.2f' % (ch[iamp],noise_met[1],np.median(ampnoise[:,iamp,1,1]),noise_met[2],np.median(ampnoise[:,iamp,2,1]))
+                    plt.gca().set_title(label)
+                plt.plot(range(nb_file),ampnoise[:,iamp,imet,1],color=color[imet])
+                if iamp>=nb_amp-4 :
+                    label='in run event number'
+                    plt.xlabel(label)
+                    if iamp%4 == 0 : 
+                        label='Measured Noise per image '
+                        plt.ylabel(label)
+                        #plt.ylim(ymin,ymax)                        
+        if show :plt.show() 
+        rawPlotFile='Noise'
+        SaveFig(fig,rawPlotFile,run_cur=run_cur,raft_cur=raft_cur,ccd_cur=ccd_cur)
+    # prepare the return dictionary 
+    to_return={}
+    to_return['noise']=ampnoise
+    return to_return
+def ProcessGlitch(run_cur,raft_cur,ccd_cur,file90,plot=True,show=False,dist=1.5):
 #def FileForBiasEstimator(run_cur,raft_cur,ccd_cur,file90):
     #
     #
@@ -26,13 +160,6 @@ def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,show=False,dist=1.5):
             overser[ifits,iamp,:]=fits[iamp+1].data[:,first_cover+2:].mean(axis=1)
             # overscan dans la direction // , on prend la moyen de l'overscan de chaque colome :de la ligne 1er overscan+2 à la fin
             overpar[ifits,iamp,:]=fits[iamp+1].data[first_lover+2:,:].mean(axis=0)
-            # noise in most of the image area
-            ampnoise[ifits,iamp,0]=np.median(fits[iamp+1].data[first_line+50:first_lover-50,first_col+50:first_cover-50].std(axis=1))
-            # noise in  the serial overscan
-            ampnoise[ifits,iamp,1]=np.median(fits[iamp+1].data[first_line+3:,first_cover+3:].std(axis=1))
-            # noise in  the // overscan 
-            ampnoise[ifits,iamp,2]=np.median(fits[iamp+1].data[first_lover+3:,first_col+3:].std(axis=0))
-           
         fits.close()
 #    return nb_file,prescan,overser,overpar
 #        
@@ -46,7 +173,6 @@ def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,show=False,dist=1.5):
         nb_amp=16
         ch=ch16
     #
-
     all_met=['pre1','pre1-pre0','pre1&pre2','pre1&pre2-pre0','over_serie','over_serie-pre0','over_//','over_//-pre0']
     nb_met=len(all_met)
     #
@@ -69,49 +195,49 @@ def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,show=False,dist=1.5):
         met=all_met[imet]
         for iamp in range(nb_amp) :
             match met :
-                case "pre1":
-                    ref_mean[imet,iamp]=np.mean(prescan[:,iamp,:,1])
-                    ref[imet,iamp,:]=np.mean(prescan[:,iamp,:,1], axis=1)-ref_mean[imet,iamp]
-                    ylabel[imet]='Bias from <prescan[1]> \n centred to mean in run'
-                case "pre1-pre0":
-                    ref_mean[imet,iamp]=np.mean(prescan[:,iamp,:,1])-np.mean(prescan[:,iamp,:,0])
-                    ref[imet,iamp,:]=np.mean(prescan[:,iamp,:,1], axis=1)-np.mean(prescan[:,iamp,:,0],axis=1)-ref_mean[imet,iamp]
-                    ylabel[imet]='Bias from <prescan[1]>-<prescan[0]> \n centred to mean in run'
-                case "pre1&pre2":
-                    ref_mean[imet,iamp]=np.mean(prescan[:,iamp,:,1:3])
-                    ref[imet,iamp,:]=np.mean(np.mean(prescan[:,iamp,:,1:3], axis=2),axis=1)-ref_mean[imet,iamp]
-                    ylabel[imet]='Bias from <prescan[1]&[2]> '
-                case "pre1&pre2-pre0":
-                    ref_mean[imet,iamp]=np.mean(prescan[:,iamp,:,1:3])-np.mean(prescan[:,iamp,:,0])
-                    ref[imet,iamp,:]=np.mean(np.mean(prescan[:,iamp,:,1:3], axis=2),axis=1)-np.mean(prescan[:,iamp,:,0], axis=1)-ref_mean[imet,iamp]
-                    ylabel[imet]='Bias from <prescan[1]&[2]>-<prescan[0]> \n centred to mean in run'
-                case "over_serie":
-                    ref_mean[imet,iamp]=np.mean(overser[:,iamp,:])
-                    ref[imet,iamp,:]=np.mean(overser[:,iamp,:],axis=1)-ref_mean[imet,iamp]
-                    ylabel[imet]='Bias from <SerialOverscan>'
-                case "over_serie-pre0":
-                    ref_mean[imet,iamp]=np.mean(overser[:,iamp,:])-np.mean(prescan[:,iamp,:,0])
-                    ref[imet,iamp,:]=np.mean(overser[:,iamp,:],axis=1)-np.mean(prescan[:,iamp,:,0], axis=1)-ref_mean[imet,iamp]
-                    ylabel[imet]='Bias from <SerialOverscan>-<prescan[0]> \n centred to mean in run'
-                case "over_//":
-                    ref_mean[imet,iamp]=np.median(overpar[:,iamp,3:])
-                    ref[imet,iamp,:]=np.median(overpar[:,iamp,3:],axis=1)-ref_mean[imet,iamp]
-                    ylabel[imet]='Bias from med(//Overscan)  '
-                case "over_//-pre0":
-                    ref_mean[imet,iamp]=np.median(overpar[:,iamp,3:])-np.mean(prescan[:,iamp,:,0])
-                    ref[imet,iamp,:]=np.median(overpar[:,iamp,3:],axis=1)-np.mean(prescan[:,iamp,:,0], axis=1)-ref_mean[imet,iamp]
-                    ylabel[imet]='Bias from med(//Overscan)-<prescan[0]> \n centred to mean in run' 
-                case _:
-                    print("unknow config")
-                    break  
-    #for imet in range(nb_met)  :
-    #    met=all_met[imet]
-    #    for iamp in range(nb_amp) :                    
-            for iref in range(nb_file) : 
-                ref_cur=ref[imet,iamp,iref]
-                found=False
-                for icl in range(icluster[imet,iamp]):
-                    if found : break
+            case "pre1":
+            ref_mean[imet,iamp]=np.mean(prescan[:,iamp,:,1])
+            ref[imet,iamp,:]=np.mean(prescan[:,iamp,:,1], axis=1)-ref_mean[imet,iamp]
+            ylabel[imet]='Bias from <prescan[1]> \n centred to mean in run'
+            case "pre1-pre0":
+            ref_mean[imet,iamp]=np.mean(prescan[:,iamp,:,1])-np.mean(prescan[:,iamp,:,0])
+            ref[imet,iamp,:]=np.mean(prescan[:,iamp,:,1], axis=1)-np.mean(prescan[:,iamp,:,0],axis=1)-ref_mean[imet,iamp]
+            ylabel[imet]='Bias from <prescan[1]>-<prescan[0]> \n centred to mean in run'
+            case "pre1&pre2":
+            ref_mean[imet,iamp]=np.mean(prescan[:,iamp,:,1:3])
+            ref[imet,iamp,:]=np.mean(np.mean(prescan[:,iamp,:,1:3], axis=2),axis=1)-ref_mean[imet,iamp]
+            ylabel[imet]='Bias from <prescan[1]&[2]> '
+            case "pre1&pre2-pre0":
+            ref_mean[imet,iamp]=np.mean(prescan[:,iamp,:,1:3])-np.mean(prescan[:,iamp,:,0])
+            ref[imet,iamp,:]=np.mean(np.mean(prescan[:,iamp,:,1:3], axis=2),axis=1)-np.mean(prescan[:,iamp,:,0], axis=1)-ref_mean[imet,iamp]
+            ylabel[imet]='Bias from <prescan[1]&[2]>-<prescan[0]> \n centred to mean in run'
+            case "over_serie":
+            ref_mean[imet,iamp]=np.mean(overser[:,iamp,:])
+            ref[imet,iamp,:]=np.mean(overser[:,iamp,:],axis=1)-ref_mean[imet,iamp]
+            ylabel[imet]='Bias from <SerialOverscan>'
+            case "over_serie-pre0":
+            ref_mean[imet,iamp]=np.mean(overser[:,iamp,:])-np.mean(prescan[:,iamp,:,0])
+            ref[imet,iamp,:]=np.mean(overser[:,iamp,:],axis=1)-np.mean(prescan[:,iamp,:,0], axis=1)-ref_mean[imet,iamp]
+            ylabel[imet]='Bias from <SerialOverscan>-<prescan[0]> \n centred to mean in run'
+            case "over_//":
+            ref_mean[imet,iamp]=np.median(overpar[:,iamp,3:])
+            ref[imet,iamp,:]=np.median(overpar[:,iamp,3:],axis=1)-ref_mean[imet,iamp]
+            ylabel[imet]='Bias from med(//Overscan)  '
+            case "over_//-pre0":
+            ref_mean[imet,iamp]=np.median(overpar[:,iamp,3:])-np.mean(prescan[:,iamp,:,0])
+            ref[imet,iamp,:]=np.median(overpar[:,iamp,3:],axis=1)-np.mean(prescan[:,iamp,:,0], axis=1)-ref_mean[imet,iamp]
+            ylabel[imet]='Bias from med(//Overscan)-<prescan[0]> \n centred to mean in run' 
+            case _:
+            print("unknow config")
+            break  
+        #for imet in range(nb_met)  :
+        #    met=all_met[imet]
+        #    for iamp in range(nb_amp) :                    
+        for iref in range(nb_file) : 
+            ref_cur=ref[imet,iamp,iref]
+            found=False
+            for icl in range(icluster[imet,iamp]):
+                if found : break
                     for icl_cur in range(cluster_size[imet,iamp,icl]) : 
                         dist_cur=abs(ref[imet,iamp,cluster[imet,iamp,icl,icl_cur]]-ref_cur)
                         if dist_cur<dist : 
@@ -119,24 +245,26 @@ def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,show=False,dist=1.5):
                             cluster_size[imet,iamp,icl]+=1
                             found=True
                             break
-                if not(found) : 
-                    # create a new cluster
-                    if icluster[imet,iamp] == nb_cluster_max-1 :
-                        # too many cluster , there is probably a defect in the image that disturb the process 
-                        # so we should identify this clustering as failled for this amp , and fill its result in the last identified cluster
-                        cluster[imet,iamp,nb_cluster_max-2,cluster_size[imet,iamp,nb_cluster_max-2]]=iref
-                        cluster_size[imet,iamp,nb_cluster_max-2]+=1
-                    else :
-                        cluster[imet,iamp,icluster[imet,iamp],cluster_size[imet,iamp,icluster[imet,iamp]]]=iref
-                        cluster_size[imet,iamp,icluster[imet,iamp]]+=1
-                        icluster[imet,iamp]+=1
-            #
-            for icl in range(icluster[imet,iamp]) : 
-                mean[imet,iamp,icl]=ref[imet,iamp,cluster[imet,iamp,icl,0:cluster_size[imet,iamp,icl]]].mean()
-                std[imet,iamp,icl]=ref[imet,iamp,cluster[imet,iamp,icl,0:cluster_size[imet,iamp,icl]]].std()
-            std_no_cluster[imet,iamp]=ref[imet,iamp,:].std()
+                        if not(found) : 
+                            # create a new cluster
+                            if icluster[imet,iamp] == nb_cluster_max-1 :
+                                # too many cluster , there is probably a defect in the image that disturb the process 
+                                # so we should identify this clustering as failled for this amp , and fill its result in the last identified cluster
+                                cluster[imet,iamp,nb_cluster_max-2,cluster_size[imet,iamp,nb_cluster_max-2]]=iref
+                                cluster_size[imet,iamp,nb_cluster_max-2]+=1
+                            else :
+                                cluster[imet,iamp,icluster[imet,iamp],cluster_size[imet,iamp,icluster[imet,iamp]]]=iref
+                                cluster_size[imet,iamp,icluster[imet,iamp]]+=1
+                                icluster[imet,iamp]+=1
+                                #
+                                for icl in range(icluster[imet,iamp]) : 
+                                    mean[imet,iamp,icl]=ref[imet,iamp,cluster[imet,iamp,icl,0:cluster_size[imet,iamp,icl]]].mean()
+                                    std[imet,iamp,icl]=ref[imet,iamp,cluster[imet,iamp,icl,0:cluster_size[imet,iamp,icl]]].std()
+                                    std_no_cluster[imet,iamp]=ref[imet,iamp,:].std()
 
-    if plot : 
+
+ 
+    if plot  :
         # plot the results :
         # for each CCD plot the raw dispersion of the // over 
         fig=plt.figure(figsize=[16,16])
@@ -170,30 +298,6 @@ def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,show=False,dist=1.5):
         rawPlotFile='BiasOverPar'
         SaveFig(fig,rawPlotFile,run_cur=run_cur,raft_cur=raft_cur,ccd_cur=ccd_cur)
         #
-        # for each CCD plot the noise estimated by diferent part of the bias / image 
-        fig=plt.figure(figsize=[16,16])
-         #                        
-        txt='run %s , RAFT %s CCD %s \n noise in ADU  per event for each amplifier   ' % (run_cur,raft_cur,ccd_cur) 
-        plt.suptitle(txt)
-        # for each type onf noise
-        for imet in range(3) : 
-            for iamp in range(nb_amp) :
-                met=all_met[imet]
-                plt.subplot(4,int(nb_amp/4),iamp+1)
-                if imet==0 :
-                    label='%s,%s=%4.2f,%s=%4.2f' % (ch[iamp],noise_met[1],np.median(ampnoise[:,iamp,1]),noise_met[2],np.median(ampnoise[:,iamp,2]))
-                    plt.gca().set_title(label)
-                plt.plot(range(nb_file),ampnoise[:,iamp,imet],color=color[imet])
-                if iamp>=nb_amp-4 :
-                    label='in run event number'
-                    plt.xlabel(label)
-                    if iamp%4 == 0 : 
-                        label='Measured Noise per image '
-                        plt.ylabel(label)
-                        #plt.ylim(ymin,ymax)                        
-        if show :plt.show() 
-        rawPlotFile='Noise'
-        SaveFig(fig,rawPlotFile,run_cur=run_cur,raft_cur=raft_cur,ccd_cur=ccd_cur)
         #
         # for each CCD plot the amplifier with the largest dispersion plot all cluster methods results
         fig=plt.figure(figsize=[16,16])
@@ -371,6 +475,4 @@ def ProcessBias(run_cur,raft_cur,ccd_cur,file90,plot=True,show=False,dist=1.5):
     to_return['std_no_cluster']=std_no_cluster
     to_return['ref']=ref
     to_return['ref_mean']=ref_mean
-    to_return['noise']=ampnoise
-
     return to_return
