@@ -39,7 +39,7 @@ def ProcessNoise(run_cur,raft_cur,ccd_cur,exp_id,plot=True,show=False):
         iamp=0
         for amp in ccd.getAmplifiers():
             amp_cur=amp.getName()
-            myimage.bias_cor(amp_cur,over_c='2D',over_l='2D',skip_c_over=0,skip_l_over=0,noise_analysis=True)
+            myimage.bias_cor(amp_cur,over_c='1D',over_l='1D',skip_c_over=0,skip_l_over=0,noise_analysis=True)
         ampnoise[iexp,:,:,:]=np.copy(myimage.amp_noise[:,:,:])
         #myimage.delete()
 
