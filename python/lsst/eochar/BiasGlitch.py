@@ -111,7 +111,7 @@ def ProcessNoise(run_cur,raft_cur,ccd_cur,exp_id,plot=True,show=False):
                         plt.ylabel(label)
                         #plt.ylim(ymin,ymax)                        
         if show :plt.show() 
-        rawPlotFile='Noise'
+        rawPlotFile='Noise_5x5'
         SaveFig(fig,rawPlotFile,run_cur=run_cur,raft_cur=raft_cur,ccd_cur=ccd_cur)
 
         # for each CCD plot the noise estimated by diferent part of the bias / image 
