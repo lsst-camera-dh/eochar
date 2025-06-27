@@ -55,7 +55,7 @@ def ProcessNoise(run_cur,raft_cur,ccd_cur,exp_id,plot=True,show=False):
                 if imet==0 :
                     label='%s,%s=%4.2f,%s=%4.2f' % (ch[iamp],noise_met[1],np.median(ampnoise[:,iamp,1,0]),noise_met[2],np.median(ampnoise[:,iamp,2,0]))
                     plt.gca().set_title(label)
-                plt.plot(range(nb_file),ampnoise[:,iamp,imet,0],color=color[imet])
+                plt.plot(range(nb_exp),ampnoise[:,iamp,imet,0],color=color[imet])
                 if iamp>=nb_amp-4 :
                     label='in run event number'
                     plt.xlabel(label)
@@ -78,7 +78,7 @@ def ProcessNoise(run_cur,raft_cur,ccd_cur,exp_id,plot=True,show=False):
                 if imet==0 :
                     label='%s,%s=%4.2f,%s=%4.2f' % (ch[iamp],noise_met[1],np.median(ampnoise[:,iamp,1,0]),noise_met[2],np.median(ampnoise[:,iamp,2,0]))
                     plt.gca().set_title(label)
-                plt.plot(range(nb_file),ampnoise[:,iamp,imet,0],color=color[imet])
+                plt.plot(range(nb_exp),ampnoise[:,iamp,imet,0],color=color[imet])
                 if iamp>=nb_amp-4 :
                     label='in run event number'
                     plt.xlabel(label)
@@ -101,7 +101,7 @@ def ProcessNoise(run_cur,raft_cur,ccd_cur,exp_id,plot=True,show=False):
                 if imet==0 :
                     label='%s,%s=%4.2f,%s=%4.2f' % (ch[iamp],noise_met[1],np.median(ampnoise[:,iamp,1,1]),noise_met[2],np.median(ampnoise[:,iamp,2,1]))
                     plt.gca().set_title(label)
-                plt.plot(range(nb_file),ampnoise[:,iamp,imet,1],color=color[imet])
+                plt.plot(range(nb_exp),ampnoise[:,iamp,imet,1],color=color[imet])
                 if iamp>=nb_amp-4 :
                     label='in run event number'
                     plt.xlabel(label)
@@ -125,7 +125,7 @@ def ProcessNoise(run_cur,raft_cur,ccd_cur,exp_id,plot=True,show=False):
                 if imet==0 :
                     label='%s,%s=%4.2f,%s=%4.2f' % (ch[iamp],noise_met[1],np.median(ampnoise[:,iamp,1,1]),noise_met[2],np.median(ampnoise[:,iamp,2,1]))
                     plt.gca().set_title(label)
-                plt.plot(range(nb_file),ampnoise[:,iamp,imet,1],color=color[imet])
+                plt.plot(range(nb_exp),ampnoise[:,iamp,imet,1],color=color[imet])
                 if iamp>=nb_amp-4 :
                     label='in run event number'
                     plt.xlabel(label)
