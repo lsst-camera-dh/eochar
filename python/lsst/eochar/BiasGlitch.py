@@ -44,7 +44,6 @@ def ProcessNoise(run_cur,raft_cur,ccd_cur,exp_id,plot=True,show=False):
         # for each type onf noise
         for imet in range(1) : 
             for iamp in range(nb_amp) :
-                met=all_met[imet]
                 plt.subplot(4,int(nb_amp/4),iamp+1)
                 if imet==0 :
                     label='%s,%s=%4.2f,%s=%4.2f' % (ch[iamp],noise_met[1],np.median(ampnoise[:,iamp,1,0]),noise_met[2],np.median(ampnoise[:,iamp,2,0]))
@@ -68,7 +67,6 @@ def ProcessNoise(run_cur,raft_cur,ccd_cur,exp_id,plot=True,show=False):
         # for each type onf noise
         for imet in range(1,3) : 
             for iamp in range(nb_amp) :
-                met=all_met[imet]
                 plt.subplot(4,int(nb_amp/4),iamp+1)
                 if imet==0 :
                     label='%s,%s=%4.2f,%s=%4.2f' % (ch[iamp],noise_met[1],np.median(ampnoise[:,iamp,1,0]),noise_met[2],np.median(ampnoise[:,iamp,2,0]))
@@ -92,7 +90,6 @@ def ProcessNoise(run_cur,raft_cur,ccd_cur,exp_id,plot=True,show=False):
         # for each type onf noise
         for imet in range(1) : 
             for iamp in range(nb_amp) :
-                met=all_met[imet]
                 plt.subplot(4,int(nb_amp/4),iamp+1)
                 if imet==0 :
                     label='%s,%s=%4.2f,%s=%4.2f' % (ch[iamp],noise_met[1],np.median(ampnoise[:,iamp,1,1]),noise_met[2],np.median(ampnoise[:,iamp,2,1]))
@@ -117,7 +114,6 @@ def ProcessNoise(run_cur,raft_cur,ccd_cur,exp_id,plot=True,show=False):
         # for each type onf noise
         for imet in range(1,3) : 
             for iamp in range(nb_amp) :
-                met=all_met[imet]
                 plt.subplot(4,int(nb_amp/4),iamp+1)
                 if imet==0 :
                     label='%s,%s=%4.2f,%s=%4.2f' % (ch[iamp],noise_met[1],np.median(ampnoise[:,iamp,1,1]),noise_met[2],np.median(ampnoise[:,iamp,2,1]))
