@@ -54,7 +54,7 @@ def ProcessNoise(run_cur,raft_cur,ccd_cur,exp_id,plot=True,show=False):
             for iamp in range(nb_amp) :
                 plt.subplot(4,int(nb_amp/4),iamp+1)
                 if imet==0 :
-                    label='%s,%s=%4.2f' % (ch[iamp],noise_met[0],np.median(ampnoise[:,iamp,0,0])))
+                    label='%s,%s=%4.2f' % (ch[iamp],noise_met[0],np.median(ampnoise[:,iamp,0,0]))
                     plt.gca().set_title(label)
                 plt.plot(range(nb_exp),ampnoise[:,iamp,imet,0],color=color[imet])
                 if iamp>=nb_amp-4 :
