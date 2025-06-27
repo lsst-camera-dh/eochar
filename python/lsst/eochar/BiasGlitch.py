@@ -11,6 +11,7 @@ def ProcessNoise(run_cur,raft_cur,ccd_cur,exp_id,plot=True,show=False):
     # show     : True/False : do we plot on screen ( it always save the plot on disk )
     # The code will us global variables , in particular : "butler" to access (butler.get) the expsoure_id  data .
     #
+    noise_met=['Image','Serial','//']
     # Compute the noise per amp 
     detector='%s_%s' % (raft_cur,ccd_cur)
     #  okay we could ask to the butler ... I'm lazzy 
@@ -154,7 +155,6 @@ def ProcessGlitch(run_cur,raft_cur,ccd_cur,file90,plot=True,show=False,dist=1.5)
     overser=np.zeros((nb_file,nb_amp,2048))
     overpar=np.zeros((nb_file,nb_amp,576))
     ampnoise=np.zeros((nb_file,nb_amp,3))
-    noise_met=['Image','Serial','//']
     # loop on files
     for ifits in range(nb_file):
         fits=pyfits.open(file90[ifits],cache=False, fsspec_kwargs=fsspec_kwargs)
