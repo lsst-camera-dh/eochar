@@ -21,6 +21,7 @@ def ProcessNoise(run_cur,raft_cur,ccd_cur,exp_id,plot=True,show=False):
     else : 
         nb_amp=16
         ch=ch16
+    color=['r','g','b','yellow','purple','black']
 
     #
     nb_exp=len(exp_id)
