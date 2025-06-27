@@ -1,4 +1,7 @@
 sensors_8ch=['SW0','SW1']
+ch8=['C10','C11','C12','C13','C14','C15','C16','C17']
+ch16=['C10','C11','C12','C13','C14','C15','C16','C17','C07','C06','C05','C04','C03','C02','C01','C00']
+
 def ProcessNoise(run_cur,raft_cur,ccd_cur,exp_id,plot=True,show=False):
     # run_cur  : Top Subdirectory to save the data and plots
     # raft_cur : Raft Name  
@@ -13,8 +16,11 @@ def ProcessNoise(run_cur,raft_cur,ccd_cur,exp_id,plot=True,show=False):
     #  okay we could ask to the butler ... I'm lazzy 
     if ccd_cur in sensors_8ch :
         nb_amp=8
+        ch=ch8
     else : 
         nb_amp=16
+        ch=ch16
+
     #
     nb_exp=len(exp_id)
     ampnoise=np.zeros((nb_exp,nb_amp,3,2))
