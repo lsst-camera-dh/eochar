@@ -70,7 +70,7 @@ class ImageAna :
         self.image[index,:,:]=image_2d-(cor_l+cor_c)
         # Noise analysis
         if noise_analysis :
-                # noise in most of the image area per 5x5 bin after bias subtraction
+                # noise in most of the imageself. area per 5x5 bin after bias subtraction
                 ny,nx=np.shape(self.image[index,self.first_l:self.first_l_over,self.first_c:self.first_c_over])
                 nx5=int(nx/5)
                 ny5=int(ny/5)
@@ -83,10 +83,10 @@ class ImageAna :
                 self.amp_noise[index,0,0]=np.median(E)
                 self.amp_noise[index,0,1]=np.median(np.sqrt(EX2-E**2))
                 # noise in  the serial overscan
-                self.amp_noise[index,1,0]=np.median(image_2d[self.first_l+skip_l_over:,self.first_c_over+skip_c_over:])
+                self.amp_noise[index,1,0]=np.median(image_2d[self.first_l+skip_l_over:,self.first_c_over+skip_c_over:].mean(axis=1))
                 self.amp_noise[index,1,1]=np.median(image_2d[self.first_l+skip_l_over:,self.first_c_over+skip_c_over:].std(axis=1))
                 # noise in  the // overscan 
-                self.amp_noise[index,2,0]=np.median(image_2d[self.first_l_over+skip_l_over:,self.first_c+skip_c_over:])       
+                self.amp_noise[index,2,0]=np.median(image_2d[self.first_l_over+skip_l_over:,self.first_c+skip_c_over:].mean(axis=0))       
                 self.amp_noise[index,2,1]=np.median(image_2d[self.first_l_over+skip_l_over:,self.first_c+skip_c_over:].std(axis=0))       
         # create a view of the science part of the CCD image
         # self.science_image=self.image_raw[self.first_l:self.first_l_over,slef.first_c:self.first_c_over]
