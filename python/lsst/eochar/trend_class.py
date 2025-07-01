@@ -1,3 +1,5 @@
+from bs4 import BeautifulSoup as bs
+import numpy as np
 # trend Object definition
 # root class , that inherit from pytno dictionary , and will allow to addres the objects like a dictionnary :
 #    obj['key']  or obj.key 
