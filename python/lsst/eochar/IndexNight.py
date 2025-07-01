@@ -207,7 +207,7 @@ def GetDay(butler,day_cur,repo_root=repo_root,instrument='LSSTCam',header_use=Tr
          print('Read Index data for day %s from %s ' % (day_cur,PandaFile))
     except:
          print('file ',PandaFile,' porbably not there , we get it from data')
-         query_cur='instrument = %s and day_obs = %s' % (instrument,day_cur)
+         query_cur='instrument = '%s' and day_obs = %s' % (instrument,day_cur)
          df=get_index(butler,query_cur,header_use=header_use,header_dm=header_dm,repo_root=repo_root,fsspec_kwargs=fsspec_kwargs)
          if write_panda :
             os.makedirs(PandaDir,exist_ok=True)
