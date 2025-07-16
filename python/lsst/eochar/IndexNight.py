@@ -164,7 +164,8 @@ def get_index(butler,query_cur,uri_fast=True,photo_use=True,channel='103',verbos
                                     photo_value['current_error']=photo_value['current_std']/np.sqrt(photo_value['current_nb_sample'])
                                     photo_value['scan_time']=hdul[0].header['SCANTIME']
                                     photo_value['scan_beg']=hdul[0].header['DATE-BEG']
-                                    photo_value['scan_end']=hdul[0].header['DATE-END'] 
+                                    photo_value['scan_end']=hdul[0].header['DATE-END']
+                                    photo_value['uri']=fd
                                     photo_data.append(photo_value)
             if len(photo_data) !=0 :
                 photo_start=np.array(photodiode_start)
@@ -181,7 +182,7 @@ def get_index(butler,query_cur,uri_fast=True,photo_use=True,channel='103',verbos
     #               
     if verbose :  
         dt=time.time()-t0
-        print('Delta t = %s , Done , all data for  %s (nb exposure %d , nb files %d) are collected '  % (dt,day_cur,len(df),nb_file))
+        print('Delta t = %s , Done , all data for  %s (nb exposure %d , nb files %d) are collected '  % (dt,query_cur,len(df),nb_file))
     return df
 def GetAllDays(butler,verbose=True,instrument='LSSTCam'):
     list_days = []
@@ -201,7 +202,11 @@ def GetAllDays(butler,verbose=True,instrument='LSSTCam'):
     return list_runs,nb_event 
 def GetDay(butler,day_cur,repo_root=repo_root,instrument='LSSTCam',header_use=True,header_dm=True,fsspec_kwargs=fsspec_kwargs,write_panda=False,panda_path='/home/a/antilog/public_html/LsstCam/Index/'):
     PandaDir=os.path.join(panda_path,day_cur)
-    PandaFile='%s/PandaDayIndex.pkl' % (PandaDir)
+    if header_use : 
+        PandaFile='%s/PandaDayHeaderIndex.pkl' % (PandaDir)
+    else :
+        PandaFile='%s/PandaDayIndex.pkl' % (PandaDir)
+    #        
     try :
          df=pd.read_pickle(PandaFile)
          print('Read Index data for day %s from %s ' % (day_cur,PandaFile))
