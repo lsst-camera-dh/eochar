@@ -165,7 +165,6 @@ def get_index(butler,query_cur,uri_fast=True,photo_use=True,channel='103',verbos
                                     photo_value['scan_time']=hdul[0].header['SCANTIME']
                                     photo_value['scan_beg']=hdul[0].header['DATE-BEG']
                                     photo_value['scan_end']=hdul[0].header['DATE-END']
-                                    photo_value['uri']=photo_file_name
                                     photo_data.append(photo_value)
             if len(photo_data) !=0 :
                 photo_start=np.array(photodiode_start)
@@ -208,7 +207,7 @@ def GetDay(butler,day_cur,repo_root=repo_root,instrument='LSSTCam',header_use=Tr
         PandaFile='%s/PandaDayIndex.pkl' % (PandaDir)
     #        
     try :
-         df=pd.read_pickle(Pan
+         df=pd.read_pickle(PandaFile)
          print('Read Index data for day %s from %s ' % (day_cur,PandaFile))
     except:
          print('file ',PandaFile,' porbably not there , we get it from data')
