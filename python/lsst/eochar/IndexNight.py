@@ -208,7 +208,8 @@ def GetDay(butler,day_cur,repo_root=repo_root,instrument='LSSTCam',header_use=Tr
         PandaFile='%s/PandaDayIndex.pkl' % (PandaDir)
     #        
     try :
-         df=pd.read_pickle(PandaFile)
+         df_temp=pd.read_pickle(PandaFile)
+         df=df_temp
          print('Read Index data for day %s from %s ' % (day_cur,PandaFile))
     except:
          print('file ',PandaFile,' porbably not there , we get it from data')
