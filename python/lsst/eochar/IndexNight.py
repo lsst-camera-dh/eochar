@@ -199,7 +199,7 @@ def GetAllDays(butler,verbose=True,instrument='LSSTCam'):
         print('number of run',len(list_days))
         print(nb_event)
     return list_runs,nb_event 
-def GetDay(butler,day_cur,repo_root=repo_root,instrument='LSSTCam',header_use=True,header_dm=True,fsspec_kwargs=fsspec_kwargs,write_panda=False,panda_path='/home/a/antilog/public_html/LsstCam/Index/'):
+def GetDay(butler,day_cur,repo_root=repo_root,instrument='LSSTCam',photo_use=True,header_use=True,header_dm=True,fsspec_kwargs=fsspec_kwargs,write_panda=False,panda_path='/home/a/antilog/public_html/LsstCam/Index/'):
     PandaDir=os.path.join(panda_path,day_cur)
     if header_use : 
         PandaFile='%s/PandaDayHeaderIndex.pkl' % (PandaDir)
@@ -212,7 +212,7 @@ def GetDay(butler,day_cur,repo_root=repo_root,instrument='LSSTCam',header_use=Tr
     except:
          print('file ',PandaFile,' porbably not there , we get it from data')
          query_cur="instrument = '%s' and day_obs = %s" % (instrument,day_cur)
-         df=get_index(butler,query_cur,header_use=header_use,header_dm=header_dm,repo_root=repo_root,fsspec_kwargs=fsspec_kwargs)
+         df=get_index(butler,query_cur,photo_use=photo_use,header_use=header_use,header_dm=header_dm,repo_root=repo_root,fsspec_kwargs=fsspec_kwargs)
          if write_panda :
             os.makedirs(PandaDir,exist_ok=True)
             df.to_pickle(PandaFile) 
