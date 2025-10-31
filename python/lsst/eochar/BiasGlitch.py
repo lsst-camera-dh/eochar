@@ -276,11 +276,11 @@ def ProcessGlitch(run_cur,raft_cur,ccd_cur,file90,plot=True,show=False,dist=1.5)
         arg_max=np.unravel_index(np.argmax(std_no_cluster, axis=None), std_no_cluster.shape)
         imet_max=arg_max[0]
         iamp_max=arg_max[1]
-        #                        
-        txt='run %s , RAFT %s CCD %s \n median( // Overscan ) per event for each amplifier   ' % (run_cur,raft_cur,ccd_cur) 
-        plt.suptitle(txt)
         # select the median verscan method
         imet=6
+        #                        
+        txt='run %s , RAFT %s CCD %s \n %s per event for each amplifier   ' % (run_cur,raft_cur,ccd_cur,ylabel[imet]) 
+        plt.suptitle(txt)
         # even if some entries are at 0 , I gues this is still ok     
         ymin=np.min(mean[imet,:,:]-5*std[imet,:,:])
         ymax=np.max(mean[imet,:,:]+5*std[imet,:,:])
@@ -300,6 +300,39 @@ def ProcessGlitch(run_cur,raft_cur,ccd_cur,file90,plot=True,show=False,dist=1.5)
             plt.ylim(ymin,ymax)                        
         if show : plt.show() 
         rawPlotFile='BiasOverPar'
+        SaveFig(fig,rawPlotFile,run_cur=run_cur,raft_cur=raft_cur,ccd_cur=ccd_cur)
+        #
+        # for each CCD plot the raw dispersion of the // over 
+        fig=plt.figure(figsize=[16,16])
+        # get the method and amp with the largest sigma 
+        arg_max=np.unravel_index(np.argmax(std_no_cluster, axis=None), std_no_cluster.shape)
+        imet_max=arg_max[0]
+        iamp_max=arg_max[1]
+        #                        
+        # select the median verscan method
+        imet=7
+        #                        
+        txt='run %s , RAFT %s CCD %s \n %s per event for each amplifier   ' % (run_cur,raft_cur,ccd_cur,ylabel[imet]) 
+        plt.suptitle(txt)
+        # even if some entries are at 0 , I gues this is still ok     
+        ymin=np.min(mean[imet,:,:]-5*std[imet,:,:])
+        ymax=np.max(mean[imet,:,:]+5*std[imet,:,:])
+        for iamp in range(nb_amp) :
+            met=all_met[imet]
+            plt.subplot(4,int(nb_amp/4),iamp+1)
+            label='%s mean=%6.1f, std=%6.3f ADU' % (ch[iamp],ref_mean[imet,iamp],ref[imet,iamp,:].std())
+            plt.gca().set_title(label)
+            plt.plot(range(nb_file),ref[imet,iamp,:],color='black')
+                #plt.plot(ref[cluster[imet,iamp,icl,0:cluster_size[imet,iamp,icl]]],color=color[icl],label=label)
+            if iamp>=nb_amp-4 :
+                label='in run event number'
+                plt.xlabel(label)
+            if iamp%4 == 0 : 
+                label='Per event // overscan median (in ADU)  \n centred to mean in run'
+                plt.ylabel(label)
+            plt.ylim(ymin,ymax)                        
+        if show : plt.show() 
+        rawPlotFile='BiasParClockInject'
         SaveFig(fig,rawPlotFile,run_cur=run_cur,raft_cur=raft_cur,ccd_cur=ccd_cur)
         #
         #
