@@ -137,8 +137,10 @@ def ProcessNoise(run_cur,raft_cur,ccd_cur,exp_id,plot=True,show=False):
         if show :plt.show() 
         rawPlotFile='Noise'
         SaveFig(fig,rawPlotFile,run_cur=run_cur,raft_cur=raft_cur,ccd_cur=ccd_cur)
-    # prepare the return dictionary 
-    return ampnoise
+    # prepare the return dictionary
+    to_return={}
+    to_return['ampnoise']=ampnoise
+    return to_return
 def ProcessGlitch(run_cur,raft_cur,ccd_cur,file90,plot=True,show=False,dist=1.5):
 #def FileForBiasEstimator(run_cur,raft_cur,ccd_cur,file90):
     #
@@ -512,4 +514,5 @@ def ProcessGlitch(run_cur,raft_cur,ccd_cur,file90,plot=True,show=False,dist=1.5)
     to_return['std_no_cluster']=std_no_cluster
     to_return['ref']=ref
     to_return['ref_mean']=ref_mean
+    to_return['overpar']=overpar
     return to_return
