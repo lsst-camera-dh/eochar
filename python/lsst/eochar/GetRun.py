@@ -4,7 +4,7 @@ import numpy as np
 #
 ch16=['C10','C11','C12','C13','C14','C15','C16','C17','C07','C06','C05','C04','C03','C02','C01','C00']
 # subroutine to get the information for a given run    (fast ) 
-def get_run_info(butler,run,nb_ccd=True):    
+def get_run_info(butler,run,nb_ccd=True,instrument='LSSTCam'):    
     df_exposure = pd.DataFrame(columns= ['science_program','id','obs_id','physical_filter','exposure_time','dark_time','observation_type','observation_reason','day_obs','seq_num','timespan','nb_ccd','uri','ccob'])
     df_exposure['uri']=df_exposure['uri'].astype('object')
     df_exposure['ccob']=df_exposure['ccob'].astype('object')
@@ -12,7 +12,7 @@ def get_run_info(butler,run,nb_ccd=True):
         where_query="exposure.science_program = '%s'  " % (run)
     else :
         where_query=run
-    for i, ref in enumerate(butler.registry.queryDimensionRecords('exposure',where=where_query).order_by("timespan.end")):
+    for i, ref in enumerate(butler.registry.queryDimensionRecords('exposure',instrument=instrument,where=where_query).order_by("timespan.end")):
         if nb_ccd :
             # then each exposure how many detector is there 
             where_query="exposure.id = %s  " % (ref.id)
@@ -26,7 +26,7 @@ def get_run_info(butler,run,nb_ccd=True):
     return df_exposure
 
 # subroutine to get the information for a run + files uri + CCOB flux information     
-def get_run(butler,run_cur,uri_fast=True,ccob_use=True,verbose=True,repo_root=None,fsspec_kwargs=None) : 
+def get_run(butler,run_cur,uri_fast=True,ccob_use=True,instrument='LSSTCam',verbose=True,repo_root=None,fsspec_kwargs=None) : 
     ccob_val=['TEMPLED1','TEMPLED2','TEMPBRD','CCOBLED','CCOBCURR','CCOBADC','CCOBFLST','PROJTIME','CCOBFLUX','DATEPBEG','MJDPBEG','DATEPEND','MJDPEND']
     #df_ccob= pd.DataFrame(columns= ccob_val]   
     # get all the info on the exposures 
@@ -34,7 +34,7 @@ def get_run(butler,run_cur,uri_fast=True,ccob_use=True,verbose=True,repo_root=No
     if verbose :  
         t0=time.time()
         print('Start queries to identify all exposures of run %s' % (run_cur))
-    df = get_run_info(butler,run_cur,nb_ccd=False)
+    df = get_run_info(butler,run_cur,nb_ccd=False,instrument='LSSTCam')
     #
     if verbose :  
         dt=time.time()-t0
@@ -128,11 +128,11 @@ def GetAllRun(butler,verbose=True,instrument='LSSTCam'):
         print('number of run',len(list_runs))
         print(nb_event)
     return list_runs,nb_event 
-def GetRunCur(butler,run_cur,repo_root=repo_root,fsspec_kwargs=fsspec_kwargs):
+def GetRunCur(butler,run_cur,repo_root=repo_root,instrument='LSSTCam',fsspec_kwargs=fsspec_kwargs):
     try :
          Pandafile='/home/a/antilog/public_html/LsstCam/IndexRun7/%s/PandaRun_pkl.pkl' % (run_cur)
          df=pd.read_pickle(Pandafile)
     except:
          print('file ',Pandafile,' porbably not there , we get it from data') 
-         df=get_run(butler,run_cur,repo_root=repo_root,fsspec_kwargs=fsspec_kwargs)
+         df=get_run(butler,run_cur,instrument=instrument,repo_root=repo_root,fsspec_kwargs=fsspec_kwargs)
     return df
