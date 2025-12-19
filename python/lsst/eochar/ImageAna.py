@@ -8,7 +8,7 @@ class ImageAna :
         self.det = raw.getDetector()
         self.nb_amp=len(self.det.getAmplifiers())
         self.vendor = self.det.getPhysicalType()
-        det_ref=self.det['C01']
+        det_ref=self.det['C10']
         self.det_name=self.det.getName()
         camera= LsstCam.getCamera()
         self.raw_det=camera[self.det_name]
