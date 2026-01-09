@@ -56,6 +56,8 @@ def get_run(butler,run_cur,uri_fast=True,ccob_use=True,instrument='LSSTCam',verb
             for detec_cur in detec : 
                 detec_dic=detec_cur.toDict()
                 Raft_CCD=detec_dic['full_name']
+                if Raft_CCD == 'RXX':
+                   Raft_CCD = 'R00' 
                 instrument=detec_dic['instrument']
                 detector=int(detec_dic['id'])
                 uri[detector]='%s%s/%s/%s/%s_%s.fits' % (repo_root,instrument,df.loc[iid,'day_obs'],df.loc[iid,'obs_id'],df.loc[iid,'obs_id'],Raft_CCD)
