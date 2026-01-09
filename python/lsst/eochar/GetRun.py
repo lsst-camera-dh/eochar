@@ -22,7 +22,7 @@ def get_run_info(butler,run,nb_ccd=True,instrument='LSSTCam'):
             results = len(list( set(results) ))
         else :
             results = None 
-        df_exposure.loc[i] = [ref.science_program,ref.id,ref.obs_id,ref.physical_filter,ref.exposure_time,ref.dark_time,ref.observation_type,ref.observation_reason,ref.day_obs,ref.seq_num,ref.timespan,None,None,None]      
+        df_exposure.loc[i] = [ref.science_program,ref.id,ref.obs_id,ref.physical_filter,ref.exposure_time,ref.dark_time,ref.observation_type,ref.observation_reason,ref.day_obs,ref.seq_num,ref.timespan,results,None,None]      
     return df_exposure
 
 # subroutine to get the information for a run + files uri + CCOB flux information     
@@ -34,7 +34,7 @@ def get_run(butler,run_cur,uri_fast=True,ccob_use=True,instrument='LSSTCam',verb
     if verbose :  
         t0=time.time()
         print('Start queries to identify all exposures of run %s' % (run_cur))
-    df = get_run_info(butler,run_cur,nb_ccd=False,instrument='LSSTCam')
+    df = get_run_info(butler,run_cur,nb_ccd=False,instrument=instrument)
     #
     if verbose :  
         dt=time.time()-t0
