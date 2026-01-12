@@ -22,13 +22,14 @@ class ImageAna :
         self.first_l_over=self.im_y_size
         self.image=np.zeros((self.nb_amp,self.last_l,self.last_c))
         self.amp_noise=np.zeros((self.nb_amp,3,2))
+        self.amp_flux=np.zeros((self.nb_amp))
         if verbose : 
             print('CCD ',self.det_name)
             print('Number of lines read=',self.amp_y_size,' Number of colomns read=',self.amp_x_size)
             print('Number of lines in Image area=',self.im_y_size,' Number of colomns in Image area=',self.im_x_size)
             print('First line in Image area=',self.first_l,' First column in Image area=',self.first_c)
         # 
-    def bias_cor(self,amp_cur,over_c='1D',over_l='1D',skip_c_over=2,skip_l_over=2,noise_analysis=False) :
+    def bias_cor(self,amp_cur,over_c='1D',over_l='1D',skip_c_over=2,skip_l_over=2,noise_analysis=False,flux_analysis=False) :
         # type of correction 
         #     None ==> Nothing 
         #     Cte ==> median over the full overscan , mean per line or column , than median over the mean ,  
@@ -87,7 +88,10 @@ class ImageAna :
                 self.amp_noise[index,1,1]=np.median(image_2d[self.first_l+skip_l_over:,self.first_c_over+skip_c_over:].std(axis=1))
                 # noise in  the // overscan 
                 self.amp_noise[index,2,0]=np.median(image_2d[self.first_l_over+skip_l_over:,self.first_c+skip_c_over:].mean(axis=0))       
-                self.amp_noise[index,2,1]=np.median(image_2d[self.first_l_over+skip_l_over:,self.first_c+skip_c_over:].std(axis=0))       
+                self.amp_noise[index,2,1]=np.median(image_2d[self.first_l_over+skip_l_over:,self.first_c+skip_c_over:].std(axis=0))
+        # Flux analysis
+        if flux_analysis :
+            self.amp_flux[index]=np.median(self.image[index,self.first_l:self.first_l_over,self.first_c:self.first_c_over])
         # create a view of the science part of the CCD image
         # self.science_image=self.image_raw[self.first_l:self.first_l_over,slef.first_c:self.first_c_over]
         #
