@@ -23,6 +23,8 @@ class ImageAna :
         self.image=np.zeros((self.nb_amp,self.last_l,self.last_c))
         self.amp_noise=np.zeros((self.nb_amp,3,2))
         self.amp_flux=np.zeros((self.nb_amp))
+        self.mean_over_per_column=np.zeros((self.nb_amp,self.last_l))
+        self.mean_over_per_line=np.zeros((self.nb_amp,self.last_c))
         if verbose : 
             print('CCD ',self.det_name)
             print('Number of lines read=',self.amp_y_size,' Number of colomns read=',self.amp_x_size)
@@ -46,13 +48,13 @@ class ImageAna :
         # Overscan correction
         # Over_c 
         self.over_c= over_c
-        self.mean_over_per_line=np.mean(image_2d[:,self.first_c_over+skip_c_over:],axis=1)
+        self.mean_over_per_line[index,:]=np.mean(image_2d[:,self.first_c_over+skip_c_over:],axis=1)
         if over_c=='1D' :
-            cor_l=self.mean_over_per_line[:,np.newaxis]
-            cor_over_l=np.median(self.mean_over_per_line[self.first_l_over+skip_l_over:])
+            cor_l=self.mean_over_per_line[index,:,np.newaxis]
+            cor_over_l=np.median(self.mean_over_per_line[index,self.first_l_over+skip_l_over:])
         elif over_c=='Cte' :
-            cor_over_l=np.median(self.mean_over_per_line[self.first_l_over+skip_l_over:])
-            cor_l=np.median(self.mean_over_per_line[self.first_l:self.first_l_over])
+            cor_over_l=np.median(self.mean_over_per_line[index,self.first_l_over+skip_l_over:])
+            cor_l=np.median(self.mean_over_per_line[index,self.first_l:self.first_l_over])
         else : 
             cor_over_l=0.
             cor_l=0.
@@ -60,11 +62,11 @@ class ImageAna :
         self.over_l= over_l
         # from // overscan  correction per colomn 
         # Over_l
-        self.mean_over_per_column=np.mean(image_2d[self.first_l_over+skip_l_over:self.last_l,:],axis=0)-cor_over_l 
+        self.mean_over_per_column[index,:]=np.mean(image_2d[self.first_l_over+skip_l_over:self.last_l,:],axis=0)-cor_over_l 
         if over_l=='1D' : 
-            cor_c=self.mean_over_per_column
+            cor_c=self.mean_over_per_column[index,:]
         elif over_l=='Cte' :
-            cor_c=np.median(self.mean_over_per_column)
+            cor_c=np.median(self.mean_over_per_column[index,:])
         else :
             cor_c=0.
         #
