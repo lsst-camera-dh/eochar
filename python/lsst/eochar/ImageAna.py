@@ -23,8 +23,8 @@ class ImageAna :
         self.image=np.zeros((self.nb_amp,self.last_l,self.last_c))
         self.amp_noise=np.zeros((self.nb_amp,3,2))
         self.amp_flux=np.zeros((self.nb_amp))
-        self.mean_over_per_column=np.zeros((self.nb_amp,self.last_l))
-        self.mean_over_per_line=np.zeros((self.nb_amp,self.last_c))
+        self.mean_over_per_column=np.zeros((self.nb_amp,self.last_c))
+        self.mean_over_per_line=np.zeros((self.nb_amp,self.last_l))
         if verbose : 
             print('CCD ',self.det_name)
             print('Number of lines read=',self.amp_y_size,' Number of colomns read=',self.amp_x_size)
